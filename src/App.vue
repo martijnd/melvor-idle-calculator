@@ -29,7 +29,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="monster of monsterData.monsters" :class="monster.maxHit >= autoEatTreshhold ? `bg-red-600` : `bg-green-600`">
+          <tr v-for="monster of monsterData.monsters" :class="(monster.maxHit * (1 - data.currentDR / 100)) >= autoEatTreshhold ? `bg-red-600` : `bg-green-600`">
             <td>{{ monster.name }}</td>
             <td>{{ monster.attackStyle }}</td>
             <td>{{ monster.maxHit }}</td>
