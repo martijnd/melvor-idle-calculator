@@ -1,4 +1,26 @@
-export const monsterData = {
+export type Monster = {
+    name: string;
+    attackStyle: string;
+    maxHit: number;
+}
+
+export type Dungeon = {
+    name: string;
+    monsters: string[];
+}
+
+export type SlayerTier = {
+    name: string;
+    monsters: string[];
+}
+
+export type IMonsterData = {
+    dungeons: Dungeon[],
+    slayerTiers: SlayerTier[],
+    monsters: Monster[]
+}
+
+export const monsterData: IMonsterData = {
     dungeons: [
         {
             name: "Chicken Coop",

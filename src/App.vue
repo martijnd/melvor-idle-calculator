@@ -75,20 +75,18 @@
               <th class="px-4 py-2 text-left">Name</th>
               <th class="px-4 py-2 text-left">Attack style</th>
               <th class="px-4 py-2 text-left">Max hit</th>
+              <th class="px-4 py-2 text-left">DR needed</th>
             </tr>
           </thead>
           <tbody>
             <tr
               v-for="monster of monsterData.monsters"
-              :class="
-                monster.maxHit * (1 - data.currentDR / 100) >= autoEatTreshhold
-                  ? `bg-red-900`
-                  : `bg-green-900`
-              "
+              :class="canIdle(monster) ? `bg-red-900` : `bg-green-900`"
             >
               <td class="px-4 py-2">{{ monster.name }}</td>
               <td class="px-4 py-2">{{ monster.attackStyle }}</td>
               <td class="px-4 py-2">{{ monster.maxHit }}</td>
+              <td class="px-4 py-2">{{ getDRNeeded(monster) }}</td>
             </tr>
           </tbody>
         </table>
@@ -102,7 +100,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, reactive, ref } from "vue";
-import { monsterData } from "./data";
+import { Monster, monsterData } from "./data";
 
 export default defineComponent({
   name: "App",
@@ -128,11 +126,56 @@ export default defineComponent({
 
     const activeTab = ref("monsters");
 
+    function getMultiplier(monsterAttackStyle: Monster["attackStyle"]) {
+      const multipliers: any = {
+        melee: {
+          ranged: 1.25,
+          magic: 0.5,
+        },
+        ranged: {
+          melee: 0.95,
+          magic: 1.25,
+        },
+        magic: {
+          melee: 1.25,
+          ranged: 0.85,
+        },
+      };
+
+      return multipliers[data.combatStyle.toLowerCase()][
+        monsterAttackStyle.toLowerCase()
+      ];
+    }
+
+    function getNettoDR(monsterAttackStyle: Monster["attackStyle"]) {
+      return getMultiplier(monsterAttackStyle) * data.currentDR;
+    }
+
+    function getNettoMaxHit({ maxHit, attackStyle }: Monster) {
+      return maxHit * (1 - getNettoDR(attackStyle) / 100);
+    }
+
+    function canIdle(monster: Monster) {
+      return getNettoMaxHit(monster) >= autoEatTreshhold.value;
+    }
+
+    function getDRNeeded(monster: Monster) {
+      for (let i = 0; i < 100; i++) {
+        if (autoEatTreshhold.value > monster.maxHit * getMultiplier(monster.attackStyle) * i / 100) {
+          return i;
+        }
+      }
+
+      return 0;
+    }
+
     return {
       data,
+      canIdle,
       monsterData,
       autoEatTreshhold,
       activeTab,
+      getDRNeeded,
     };
   },
 });
