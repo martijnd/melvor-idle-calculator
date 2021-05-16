@@ -121,9 +121,7 @@
             <tbody>
               <tr
                 v-for="monster of monsterData.monsters"
-                :class="
-                  canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`
-                "
+                :class="canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`"
               >
                 <td class="px-4 py-2">{{ monster.name }}</td>
                 <td class="hidden px-4 py-2 md:table-cell">
@@ -145,19 +143,61 @@
           </table>
         </div>
         <div class="p-4" v-if="data.activeTab === 'dungeons'">
-          <h2 class="text-xl font-semibold mb-4">Dungeons</h2>
-          <select
-            id="dungeon"
-            class="text-white px-4 py-2 rounded bg-[#474747]"
-            v-model="data.dungeonChoice"
-          >
-            <option
-              v-for="dungeon of monsterData.dungeons"
-              :value="dungeon.name"
+          <div class="flex justify-between my-4 items-center">
+            <h2 class="text-xl font-semibold">Dungeons
+              <svg
+                v-if="canIdleDungeon"
+                class="inline text-[#1a7c43]"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M5.75 12.8665L8.33995 16.4138C9.15171 17.5256 10.8179 17.504 11.6006 16.3715L18.25 6.75"
+                />
+              </svg>
+              <svg
+                v-else
+                class="inline text-[#6b2727]"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M17.25 6.75L6.75 17.25"
+                ></path>
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M6.75 6.75L17.25 17.25"
+                ></path>
+              </svg>
+            </h2>
+            <select
+              id="dungeon"
+              class="text-white px-4 py-2 rounded bg-[#474747]"
+              v-model="data.dungeonChoice"
             >
-              {{ dungeon.name }}
-            </option>
-          </select>
+              <option
+                v-for="dungeon of monsterData.dungeons"
+                :value="dungeon.name"
+              >
+                {{ dungeon.name }}
+              </option>
+            </select>
+          </div>
           <table class="w-full">
             <thead>
               <tr>
@@ -179,9 +219,7 @@
             <tbody>
               <tr
                 v-for="monster of dungeonChoiceMonsters"
-                :class="
-                  canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`
-                "
+                :class="canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`"
               >
                 <td class="px-4 py-2">{{ monster.name }}</td>
                 <td class="hidden px-4 py-2 md:table-cell">
@@ -203,19 +241,62 @@
           </table>
         </div>
         <div class="p-4" v-if="data.activeTab === 'slayer'">
-          <h2 class="text-xl font-semibold mb-4">Slayer</h2> {{canIdleSlayerTier}}
-          <select
-            id="slayer"
-            class="text-white px-4 py-2 rounded bg-[#474747]"
-            v-model="data.slayerTier"
-          >
-            <option
-              v-for="tier of monsterData.slayerTiers"
-              :value="tier.name"
+          <div class="flex justify-between my-4 items-center">
+            <h2 class="text-xl font-semibold">
+              Slayer
+              <svg
+                v-if="canIdleSlayerTier"
+                class="inline text-[#1a7c43]"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M5.75 12.8665L8.33995 16.4138C9.15171 17.5256 10.8179 17.504 11.6006 16.3715L18.25 6.75"
+                />
+              </svg>
+              <svg
+                v-else
+                class="inline text-[#6b2727]"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M17.25 6.75L6.75 17.25"
+                ></path>
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M6.75 6.75L17.25 17.25"
+                ></path>
+              </svg>
+            </h2>
+            <select
+              id="slayer"
+              class="text-white px-4 py-2 rounded bg-[#474747]"
+              v-model="data.slayerTier"
             >
-              {{ tier.name }}
-            </option>
-          </select>
+              <option
+                v-for="tier of monsterData.slayerTiers"
+                :value="tier.name"
+              >
+                {{ tier.name }}
+              </option>
+            </select>
+          </div>
           <table class="w-full">
             <thead>
               <tr>
@@ -237,9 +318,7 @@
             <tbody>
               <tr
                 v-for="monster of slayerTierMonsters"
-                :class="
-                  canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`
-                "
+                :class="canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`"
               >
                 <td class="px-4 py-2">{{ monster.name }}</td>
                 <td class="hidden px-4 py-2 md:table-cell">
@@ -316,21 +395,21 @@ export default defineComponent({
       wastefulRing: "No",
       guardianAmulet: "No",
       dungeonChoice: "Chicken Coop",
-      activeTab: 'monsters'
+      activeTab: "monsters",
     });
 
     const dungeonChoiceMonsters = computed(
       () =>
         monsterData.dungeons.find(
           (dungeon) => dungeon.name === data.dungeonChoice
-        )?.monsters
+        )?.monsters.map(getMonster)
     );
-    
+
     const slayerTierMonsters = computed(
       () =>
         monsterData.slayerTiers.find(
           (dungeon) => dungeon.name === data.slayerTier
-        )?.monsters
+        )?.monsters.map(getMonster)
     );
 
     function getMonster(monsterString: string) {
@@ -380,25 +459,31 @@ export default defineComponent({
     }
 
     function canIdle(monster: Monster | string) {
-      if (typeof monster === 'string') {
+      if (typeof monster === "string") {
         monster = getMonster(monster);
       }
 
       return getReducedMaxHit(monster) < autoEatTreshhold.value;
     }
 
+    const canIdleDungeon = computed(() => {
+      if (dungeonChoiceMonsters.value) {
+        return dungeonChoiceMonsters.value.every(canIdle);
+      }
+
+      return false;
+    });
+
     const canIdleSlayerTier = computed(() => {
       if (slayerTierMonsters.value) {
-        return slayerTierMonsters.value.every(monster => {
-          return canIdle(monster);
-        });
+        return slayerTierMonsters.value.every(canIdle);
       }
 
       return false;
     });
 
     function getDRNeeded(monster: Monster | string) {
-      if (typeof monster === 'string') {
+      if (typeof monster === "string") {
         monster = getMonster(monster);
       }
 
@@ -421,7 +506,7 @@ export default defineComponent({
         autoEatLevel,
         combatStyle,
         dungeonChoice,
-        activeTab
+        activeTab,
       }) => {
         localStorage.totalHealth = totalHealth;
         localStorage.currentDR = currentDR;
@@ -442,7 +527,8 @@ export default defineComponent({
       dungeonChoiceMonsters,
       slayerTierMonsters,
       getMonster,
-      canIdleSlayerTier
+      canIdleSlayerTier,
+      canIdleDungeon
     };
   },
 });
