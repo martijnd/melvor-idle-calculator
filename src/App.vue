@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-900 min-h-screen text-white">
+  <div class="bg-gray-900 min-h-screen text-white p-4">
     <div class="py-4 mx-auto max-w-screen-lg">
       <h1>Idle calculator</h1>
       <div class="my-4 flex space-x-4">
@@ -15,7 +15,7 @@
           />
         </label>
         <label for="currentDR">
-          <div>Current DR ({{autoEatTreshhold}} HP)</div>
+          <div>Current DR ({{ autoEatTreshhold }} HP)</div>
           <input
             id="currentDR"
             class="text-black px-4 py-2"
@@ -95,6 +95,39 @@
       </div>
       <div class="p-4" v-if="activeTab === 'dungeons'">
         <h2 class="font-semibold text-xl">Dungeons</h2>
+        <select
+          id="dungeon"
+          class="text-black px-4 py-2"
+          v-model="data.dungeonChoice"
+        >
+          <option v-for="dungeon of monsterData.dungeons" :value="dungeon.name">
+            {{ dungeon.name }}
+          </option>
+        </select>
+
+        <table class="w-full">
+          <thead>
+            <tr>
+              <th class="px-4 py-2 text-left">Name</th>
+              <th class="px-4 py-2 text-left">Attack style</th>
+              <th class="px-4 py-2 text-left">Max hit</th>
+              <th class="px-4 py-2 text-left">Reduced Max hit</th> 
+              <th class="px-4 py-2 text-left">DR needed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="monster of dungeonChoiceMonsters"
+              :class="canIdle(getMonster(monster)) ? `bg-red-900` : `bg-green-900`"
+            >
+              <td class="px-4 py-2">{{ getMonster(monster).name }}</td>
+              <td class="px-4 py-2">{{ getMonster(monster).attackStyle }}</td>
+              <td class="px-4 py-2">{{ getMonster(monster).maxHit }}</td>
+              <td class="px-4 py-2">({{ getReducedMaxHit(getMonster(monster)) }})</td>
+              <td class="px-4 py-2">{{ getDRNeeded(getMonster(monster)) }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -120,30 +153,41 @@ export default defineComponent({
       dungeonChoice: "Chicken Coop",
     });
 
+    const dungeonChoiceMonsters = computed(
+      () =>
+        monsterData.dungeons.find(
+          (dungeon) => dungeon.name === data.dungeonChoice
+        )?.monsters
+    );
+
+    function getMonster(monsterString: string) {
+      return monsterData.monsters.find(monster => monster.name === monsterString);
+    } 
+
     const treshholds = [0.2, 0.3, 0.4];
 
     const autoEatTreshhold = computed(
       () => treshholds[data.autoEatLevel - 1] * data.totalHealth
     );
 
-    const activeTab = ref("monsters");
+    const activeTab = ref("dungeons");
 
     function getMultiplier(monsterAttackStyle: Monster["attackStyle"]) {
       const multipliers: any = {
         melee: {
           ranged: 1.25,
           magic: 0.5,
-          melee: 1
+          melee: 1,
         },
         ranged: {
           melee: 0.95,
           magic: 1.25,
-          ranged: 1
+          ranged: 1,
         },
         magic: {
           melee: 1.25,
           ranged: 0.85,
-          magic: 1
+          magic: 1,
         },
       };
 
@@ -164,14 +208,15 @@ export default defineComponent({
       return getReducedMaxHit(monster) >= autoEatTreshhold.value;
     }
 
-
     /**
      * max hit (100) * i
      * 100 * 0.8
      */
     function getDRNeeded(monster: Monster) {
       for (let i = 0; i < 100; i++) {
-        if (autoEatTreshhold.value > Math.floor(monster.maxHit * (1 - (i / 100)))) {
+        if (
+          autoEatTreshhold.value > Math.floor(monster.maxHit * (1 - i / 100))
+        ) {
           return Math.floor(i / getMultiplier(monster.attackStyle));
         }
       }
@@ -186,7 +231,9 @@ export default defineComponent({
       autoEatTreshhold,
       activeTab,
       getDRNeeded,
-      getReducedMaxHit
+      getReducedMaxHit,
+      dungeonChoiceMonsters,
+      getMonster
     };
   },
 });

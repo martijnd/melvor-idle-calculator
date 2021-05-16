@@ -68,7 +68,7 @@ export const monsterData: IMonsterData = {
         {
             name: "Miolite Caves",
             monsters: [
-                "Miolite Spring",
+                "Miolite Sprig",
                 "Miolite Trio",
                 "Miolite Warden",
                 "Miolite Monarch"
@@ -821,7 +821,7 @@ export const monsterData: IMonsterData = {
             maxHit: 140
         },
         {
-            name: "Resurrected Eye",
+            name: "The Resurrected Eye",
             attackStyle: "Magic",
             maxHit: 240
         },
