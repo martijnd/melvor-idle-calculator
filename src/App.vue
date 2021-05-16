@@ -1,140 +1,158 @@
 <template>
-  <div class="bg-gray-900 min-h-screen text-white p-4">
-    <div class="py-4 mx-auto max-w-screen-lg">
-      <h1>Idle calculator</h1>
-      <div class="my-4 flex space-x-4">
-        <label for="totalHealth">
-          <div>Total health</div>
-          <input
-            id="totalHealth"
-            class="text-black px-4 py-2"
-            type="number"
-            step="10"
-            min="0"
-            v-model="data.totalHealth"
-          />
-        </label>
-        <label for="currentDR">
-          <div>Current DR ({{ autoEatTreshhold }} HP)</div>
-          <input
-            id="currentDR"
-            class="text-black px-4 py-2"
-            type="number"
-            step="1"
-            min="0"
-            v-model="data.currentDR"
-          />
-        </label>
-        <label for="autoEatLevel">
-          <div>Auto Eat Level</div>
-          <select
-            id="autoEatLevel"
-            class="text-black px-4 py-2"
-            v-model="data.autoEatLevel"
+  <div class="bg-[#121212] min-h-screen text-white p-4">
+    <div class="relative max-w-screen-lg py-4 mx-auto">
+      <h1 class="text-2xl font-bold text-center">Idle calculator</h1>
+      <hr class="my-4">
+      <div class="sticky top-0 bg-[#121212] mb-1">
+        <div class="flex flex-col justify-center py-4 mt-4 space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+          <label for="totalHealth">
+            <div class="mb-1 font-semibold">Total health</div>
+            <input
+              id="totalHealth"
+              class="text-white px-4 py-2 rounded bg-[#272727]"
+              type="number"
+              step="10"
+              min="0"
+              v-model="data.totalHealth"
+            />
+          </label>
+          <label for="currentDR">
+            <div class="mb-1 font-semibold">Current DR</div>
+            <input
+              id="currentDR"
+              class="text-white px-4 py-2 rounded bg-[#272727]"
+              type="number"
+              step="1"
+              min="0"
+              v-model="data.currentDR"
+            />
+          </label>
+          <label for="autoEatLevel">
+            <div class="mb-1 font-semibold">Auto Eat</div>
+            <select
+              id="autoEatLevel"
+              class="text-white px-4 py-2 rounded bg-[#272727]"
+              v-model="data.autoEatLevel"
+            >
+              <option v-for="value of [1, 2, 3]" :value="value">
+                Level {{ value }}
+              </option>
+            </select>
+          </label>
+          <label for="combatStyle">
+            <div class="mb-1 font-semibold">Combat style</div>
+            <select
+              id="combatStyle"
+              class="text-white px-4 py-2 rounded bg-[#272727]"
+              v-model="data.combatStyle"
+            >
+              <option
+                v-for="value of ['Melee', 'Ranged', 'Magic']"
+                :value="value"
+              >
+                {{ value }}
+              </option>
+            </select>
+          </label>
+        </div>
+        <div class="pb-4 text-sm italic text-center text-gray-300">
+        Auto Eat Threshhold is {{autoEatTreshhold}} HP
+      </div>
+      </div>
+      <div class="bg-[#272727]">
+        <div id="tabs" class="flex">
+          <button
+            :class="`tab border border-r-0 px-4 py-2 rounded-tl flex-1 hover:bg-[#444] ${activeTab === 'monsters' ? 'font-bold bg-[#121212]' : 'bg-[#272727]' }`"
+            @click="activeTab = 'monsters'"
           >
-            <option v-for="value of [1, 2, 3]" :value="value">
-              {{ value }}
+            Monsters
+          </button>
+          <button
+            :class="`tab border px-4 py-2 rounded-tr flex-1 hover:bg-[#444] ${activeTab === 'dungeons' ? 'font-bold bg-[#121212]' : 'bg-[#272727]' }`"
+            @click="activeTab = 'dungeons'"
+          >
+            Dungeons
+          </button>
+        </div>
+        <div class="p-4" v-if="activeTab === 'monsters'">
+          <h2 class="text-xl font-semibold">Monsters</h2>
+          <table class="w-full">
+            <thead>
+              <tr>
+                <th class="px-4 py-2 text-left">Name</th>
+                <th class="hidden px-4 py-2 text-left md:table-cell">Attack style</th>
+                <th class="hidden px-4 py-2 text-right tabular-nums md:table-cell">Max hit</th>
+                <th class="px-4 py-2 text-right tabular-nums">Reduced Max hit</th>
+                <th class="px-4 py-2 text-right tabular-nums">DR needed</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="monster of monsterData.monsters"
+                :class="canIdle(monster) ? `bg-[#6b2727]` : `bg-[#1a7c43]`"
+              >
+                <td class="px-4 py-2">{{ monster.name }}</td>
+                <td class="hidden px-4 py-2 md:table-cell">{{ monster.attackStyle }}</td>
+                <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">{{ monster.maxHit }}</td>
+                <td class="px-4 py-2 text-right tabular-nums">({{ getReducedMaxHit(monster) }})</td>
+                <td class="px-4 py-2 text-right tabular-nums">{{ getDRNeeded(monster) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="p-4" v-if="activeTab === 'dungeons'">
+          <h2 class="mb-2 text-xl font-semibold">Dungeons</h2>
+          <select
+            id="dungeon"
+            class="text-white px-4 py-2 rounded bg-[#474747]"
+            v-model="data.dungeonChoice"
+          >
+            <option v-for="dungeon of monsterData.dungeons" :value="dungeon.name">
+              {{ dungeon.name }}
             </option>
           </select>
-        </label>
-        <label for="combatStyle">
-          <div>Combat style</div>
-          <select
-            id="combatStyle"
-            class="text-black px-4 py-2"
-            v-model="data.combatStyle"
-          >
-            <option
-              v-for="value of ['Melee', 'Ranged', 'Magic']"
-              :value="value"
-            >
-              {{ value }}
-            </option>
-          </select>
-        </label>
-      </div>
-      <div id="tabs" class="flex">
-        <div
-          class="tab border px-4 py-2 rounded"
-          @click="activeTab = 'monsters'"
-        >
-          Monsters
+          <table class="w-full">
+            <thead>
+              <tr>
+                <th class="px-4 py-2 text-left">Name</th>
+                <th class="hidden px-4 py-2 text-left md:table-cell">Attack style</th>
+                <th class="hidden px-4 py-2 text-right tabular-nums md:table-cell">Max hit</th>
+                <th class="px-4 py-2 text-right tabular-nums">Reduced Max hit</th>
+                <th class="px-4 py-2 text-right tabular-nums">DR needed (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="monster of dungeonChoiceMonsters"
+                :class="
+                  canIdle(getMonster(monster)) ? `bg-[#6b2727]` : `bg-[#1a7c43]`
+                "
+              >
+                <td class="px-4 py-2">{{ getMonster(monster).name }}</td>
+                <td class="hidden px-4 py-2 md:table-cell">{{ getMonster(monster).attackStyle }}</td>
+                <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">{{ getMonster(monster).maxHit }}</td>
+                <td class="px-4 py-2 text-right tabular-nums">
+                  ({{ getReducedMaxHit(getMonster(monster)) }})
+                </td>
+                <td class="px-4 py-2">{{ getDRNeeded(getMonster(monster)) }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div
-          class="tab border px-4 py-2 rounded"
-          @click="activeTab = 'dungeons'"
-        >
-          Dungeons
-        </div>
-      </div>
-      <div class="p-4" v-if="activeTab === 'monsters'">
-        <h2 class="font-semibold text-xl">Monsters</h2>
-        <table>
-          <thead>
-            <tr>
-              <th class="px-4 py-2 text-left">Name</th>
-              <th class="px-4 py-2 text-left">Attack style</th>
-              <th class="px-4 py-2 text-left">Max hit</th>
-              <th class="px-4 py-2 text-left">Reduced Max hit</th>
-              <th class="px-4 py-2 text-left">DR needed</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="monster of monsterData.monsters"
-              :class="canIdle(monster) ? `bg-red-900` : `bg-green-900`"
-            >
-              <td class="px-4 py-2">{{ monster.name }}</td>
-              <td class="px-4 py-2">{{ monster.attackStyle }}</td>
-              <td class="px-4 py-2">{{ monster.maxHit }}</td>
-              <td class="px-4 py-2">({{ getReducedMaxHit(monster) }})</td>
-              <td class="px-4 py-2">{{ getDRNeeded(monster) }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="p-4" v-if="activeTab === 'dungeons'">
-        <h2 class="font-semibold text-xl">Dungeons</h2>
-        <select
-          id="dungeon"
-          class="text-black px-4 py-2"
-          v-model="data.dungeonChoice"
-        >
-          <option v-for="dungeon of monsterData.dungeons" :value="dungeon.name">
-            {{ dungeon.name }}
-          </option>
-        </select>
-
-        <table class="w-full">
-          <thead>
-            <tr>
-              <th class="px-4 py-2 text-left">Name</th>
-              <th class="px-4 py-2 text-left">Attack style</th>
-              <th class="px-4 py-2 text-left">Max hit</th>
-              <th class="px-4 py-2 text-left">Reduced Max hit</th> 
-              <th class="px-4 py-2 text-left">DR needed</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="monster of dungeonChoiceMonsters"
-              :class="canIdle(getMonster(monster)) ? `bg-red-900` : `bg-green-900`"
-            >
-              <td class="px-4 py-2">{{ getMonster(monster).name }}</td>
-              <td class="px-4 py-2">{{ getMonster(monster).attackStyle }}</td>
-              <td class="px-4 py-2">{{ getMonster(monster).maxHit }}</td>
-              <td class="px-4 py-2">({{ getReducedMaxHit(getMonster(monster)) }})</td>
-              <td class="px-4 py-2">{{ getDRNeeded(getMonster(monster)) }}</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, reactive, ref, watch } from "vue";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  reactive,
+  ref,
+  watch,
+} from "vue";
 import { Monster, monsterData } from "./data";
 
 export default defineComponent({
@@ -183,8 +201,10 @@ export default defineComponent({
     );
 
     function getMonster(monsterString: string) {
-      return monsterData.monsters.find(monster => monster.name === monsterString);
-    } 
+      return monsterData.monsters.find(
+        (monster) => monster.name === monsterString
+      );
+    }
 
     const treshholds = [0.2, 0.3, 0.4];
 
@@ -246,13 +266,22 @@ export default defineComponent({
       return 0;
     }
 
-    watch(data, ({totalHealth, currentDR, autoEatLevel, combatStyle, dungeonChoice}) => {
-      localStorage.totalHealth = totalHealth; 
-      localStorage.currentDR = currentDR;
-      localStorage.autoEatLevel = autoEatLevel;
-      localStorage.combatStyle = combatStyle;
-      localStorage.dungeonChoice = dungeonChoice;
-    })
+    watch(
+      data,
+      ({
+        totalHealth,
+        currentDR,
+        autoEatLevel,
+        combatStyle,
+        dungeonChoice,
+      }) => {
+        localStorage.totalHealth = totalHealth;
+        localStorage.currentDR = currentDR;
+        localStorage.autoEatLevel = autoEatLevel;
+        localStorage.combatStyle = combatStyle;
+        localStorage.dungeonChoice = dungeonChoice;
+      }
+    );
 
     return {
       data,
@@ -263,7 +292,7 @@ export default defineComponent({
       getDRNeeded,
       getReducedMaxHit,
       dungeonChoiceMonsters,
-      getMonster
+      getMonster,
     };
   },
 });
