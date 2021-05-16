@@ -15,7 +15,7 @@
           />
         </label>
         <label for="currentDR">
-          <div>Current DR</div>
+          <div>Current DR ({{autoEatTreshhold}} HP)</div>
           <input
             id="currentDR"
             class="text-black px-4 py-2"
@@ -75,6 +75,7 @@
               <th class="px-4 py-2 text-left">Name</th>
               <th class="px-4 py-2 text-left">Attack style</th>
               <th class="px-4 py-2 text-left">Max hit</th>
+              <th class="px-4 py-2 text-left">Reduced Max hit</th>
               <th class="px-4 py-2 text-left">DR needed</th>
             </tr>
           </thead>
@@ -86,6 +87,7 @@
               <td class="px-4 py-2">{{ monster.name }}</td>
               <td class="px-4 py-2">{{ monster.attackStyle }}</td>
               <td class="px-4 py-2">{{ monster.maxHit }}</td>
+              <td class="px-4 py-2">({{ getReducedMaxHit(monster) }})</td>
               <td class="px-4 py-2">{{ getDRNeeded(monster) }}</td>
             </tr>
           </tbody>
@@ -131,14 +133,17 @@ export default defineComponent({
         melee: {
           ranged: 1.25,
           magic: 0.5,
+          melee: 1
         },
         ranged: {
           melee: 0.95,
           magic: 1.25,
+          ranged: 1
         },
         magic: {
           melee: 1.25,
           ranged: 0.85,
+          magic: 1
         },
       };
 
@@ -151,18 +156,23 @@ export default defineComponent({
       return getMultiplier(monsterAttackStyle) * data.currentDR;
     }
 
-    function getNettoMaxHit({ maxHit, attackStyle }: Monster) {
-      return maxHit * (1 - getNettoDR(attackStyle) / 100);
+    function getReducedMaxHit({ maxHit, attackStyle }: Monster) {
+      return Math.floor(maxHit * (1 - getNettoDR(attackStyle) / 100));
     }
 
     function canIdle(monster: Monster) {
-      return getNettoMaxHit(monster) >= autoEatTreshhold.value;
+      return getReducedMaxHit(monster) >= autoEatTreshhold.value;
     }
 
+
+    /**
+     * max hit (100) * i
+     * 100 * 0.8
+     */
     function getDRNeeded(monster: Monster) {
       for (let i = 0; i < 100; i++) {
-        if (autoEatTreshhold.value > monster.maxHit * getMultiplier(monster.attackStyle) * i / 100) {
-          return i;
+        if (autoEatTreshhold.value > Math.floor(monster.maxHit * (1 - (i / 100)))) {
+          return Math.floor(i / getMultiplier(monster.attackStyle));
         }
       }
 
@@ -176,6 +186,7 @@ export default defineComponent({
       autoEatTreshhold,
       activeTab,
       getDRNeeded,
+      getReducedMaxHit
     };
   },
 });
