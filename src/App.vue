@@ -7,7 +7,7 @@
         <div
           class="flex flex-col justify-center py-4 mt-4 space-y-4 md:flex-row md:space-x-4 md:space-y-0"
         >
-          <div class="flex space-x-4">
+          <div class="flex space-x-4 md:w-1/2">
             <label for="totalHealth" class="w-1/2">
               <div class="mb-1 font-semibold">Total health</div>
               <input
@@ -31,7 +31,7 @@
               />
             </label>
           </div>
-          <div class="flex space-x-4">
+          <div class="flex space-x-4 md:w-1/2">
             <label for="autoEatLevel" class="w-1/2">
               <div class="mb-1 font-semibold">Auto Eat</div>
               <select
