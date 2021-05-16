@@ -70,8 +70,8 @@
                 class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
                 v-model="data.wastefulRing"
               >
-                <option v-for="value of [true, false]" :value="value">
-                  {{ value ? "Yes" : "No" }}
+                <option v-for="value of ['Yes', 'No']" :value="value === 'Yes'">
+                  {{ value }}
                 </option>
               </select>
             </label>
@@ -82,8 +82,8 @@
                 class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
                 v-model="data.guardianAmulet"
               >
-                <option v-for="value of [true, false]" :value="value">
-                  {{ value ? "Yes" : "No" }}
+                <option v-for="value of ['Yes', 'No']" :value="value === 'Yes'">
+                  {{ value }}
                 </option>
               </select>
             </label>
