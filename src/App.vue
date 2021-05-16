@@ -60,9 +60,35 @@
               </select>
             </label>
           </div>
+          <div class="flex space-x-4 md:w-1/2">
+            <label for="autoEatLevel" class="w-1/2">
+              <div class="mb-1 font-semibold">Wasteful ring</div>
+              <select
+                id="wastefulRing"
+                class="text-white px-4 py-2 rounded bg-[#272727] h-10 w-full"
+                v-model="data.wastefulRing"
+              >
+                <option v-for="value of [true, false]" :value="value">
+                  {{ value ? 'Yes' : 'No' }}
+                </option>
+              </select>
+            </label>
+            <label for="combatStyle" class="w-1/2">
+              <div class="mb-1 font-semibold">Guardian amulet</div>
+              <select
+                id="guardianAmulet"
+                class="text-white px-4 py-2 rounded bg-[#272727] h-10 w-full"
+                v-model="data.guardianAmulet"
+              >
+                <option v-for="value of [true, false]" :value="value">
+                  {{ value ? 'Yes' : 'No' }}
+                </option>
+              </select>
+            </label>
+          </div>
         </div>
         <div class="pb-4 text-sm italic text-center text-gray-300">
-          Auto Eat Threshold is {{ Math.floor(autoEatTreshhold) }} HP
+          Auto Eat Threshold is {{ Math.floor(autoEatTreshold) }} HP
         </div>
       </div>
       <div class="bg-[#272727]">
@@ -378,6 +404,14 @@ export default defineComponent({
       if (localStorage.combatStyle) {
         data.combatStyle = localStorage.combatStyle;
       }
+      
+      if (localStorage.wastefulRing) {
+        data.wastefulRing = localStorage.wastefulRing;
+      }
+      
+      if (localStorage.guardianAmulet) {
+        data.guardianAmulet = localStorage.guardianAmulet;
+      }
 
       if (localStorage.dungeonChoice) {
         data.dungeonChoice = localStorage.dungeonChoice;
@@ -395,8 +429,8 @@ export default defineComponent({
       autoEatLevel: 1,
       combatStyle: "Melee",
       gameMode: "Normal",
-      wastefulRing: "No",
-      guardianAmulet: "No",
+      wastefulRing: false,
+      guardianAmulet: false,
       dungeonChoice: "Chicken Coop",
       activeTab: "monsters",
     });
@@ -421,10 +455,12 @@ export default defineComponent({
       );
     }
 
-    const treshholds = [0.2, 0.3, 0.4];
+    const tresholds = [0.2, 0.3, 0.4];
 
-    const autoEatTreshhold = computed(
-      () => treshholds[data.autoEatLevel - 1] * data.totalHealth
+    const autoEatTreshold = computed(
+      () => {
+        return (tresholds[data.autoEatLevel - 1] + (data.wastefulRing ? 0.05 : 0)) * data.totalHealth;
+      }
     );
 
     function getMultiplier(monsterAttackStyle: Monster["attackStyle"]) {
@@ -452,7 +488,7 @@ export default defineComponent({
     }
 
     function getNettoDR(monsterAttackStyle: Monster["attackStyle"]) {
-      return getMultiplier(monsterAttackStyle) * data.currentDR;
+      return getMultiplier(monsterAttackStyle) * (Number(data.currentDR) + (data.guardianAmulet ? 5 : 0));
     }
 
     function getReducedMaxHit({ maxHit, attackStyle }: Monster) {
@@ -464,7 +500,7 @@ export default defineComponent({
         monster = getMonster(monster);
       }
 
-      return getReducedMaxHit(monster) < autoEatTreshhold.value;
+      return getReducedMaxHit(monster) < autoEatTreshold.value;
     }
 
     const canIdleDungeon = computed(() => {
@@ -490,7 +526,7 @@ export default defineComponent({
 
       for (let i = 0; i < 100; i++) {
         if (
-          autoEatTreshhold.value > Math.floor(monster.maxHit * (1 - i / 100))
+          autoEatTreshold.value > Math.floor(monster.maxHit * (1 - i / 100))
         ) {
           return Math.floor(i / getMultiplier(monster.attackStyle));
         }
@@ -506,6 +542,8 @@ export default defineComponent({
         currentDR,
         autoEatLevel,
         combatStyle,
+        wastefulRing,
+        guardianAmulet,
         dungeonChoice,
         activeTab,
       }) => {
@@ -513,6 +551,8 @@ export default defineComponent({
         localStorage.currentDR = currentDR;
         localStorage.autoEatLevel = autoEatLevel;
         localStorage.combatStyle = combatStyle;
+        localStorage.wastefulRing = wastefulRing;
+        localStorage.guardianAmulet = guardianAmulet;
         localStorage.dungeonChoice = dungeonChoice;
         localStorage.activeTab = activeTab;
       }
@@ -522,7 +562,7 @@ export default defineComponent({
       data,
       canIdle,
       monsterData,
-      autoEatTreshhold,
+      autoEatTreshold,
       getDRNeeded,
       getReducedMaxHit,
       dungeonChoiceMonsters,
