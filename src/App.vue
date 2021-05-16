@@ -152,6 +152,7 @@
           <table class="w-full">
             <thead>
               <tr>
+                <th class="px-4 py-2 text-left hidden md:table-cell"></th>
                 <th class="px-4 py-2 text-left">Name</th>
                 <th class="hidden px-4 py-2 text-left md:table-cell">
                   Attack style
@@ -172,6 +173,9 @@
                 v-for="monster of monsterData.monsters"
                 :class="canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`"
               >
+              <td class="px-4 hidden md:table-cell">
+                <img class="h-10 w-10" :src="`https://cdn.melvor.net/core/v018/assets/media/monsters/${monster.image}`" :alt="monster.name">
+              </td>
                 <td class="px-4 py-2">
                   <a
                     class="hover:underline"
