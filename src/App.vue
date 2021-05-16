@@ -88,8 +88,12 @@
             </label>
           </div>
         </div>
-        <div class="flex items-center justify-between py-2 text-sm italic text-center text-gray-300">
-          <span>Auto Eat Threshold is {{ Math.floor(autoEatTreshold) }} HP</span>
+        <div
+          class="flex items-center justify-between py-2 text-sm italic text-center text-gray-300"
+        >
+          <span
+            >Auto Eat Threshold is {{ Math.floor(autoEatTreshold) }} HP</span
+          >
           <button
             :class="`bottom-2 right-0 transform ${
               data.inputsVisible ? 'rotate-180' : ''
@@ -143,9 +147,7 @@
         </div>
         <div class="p-4" v-if="data.activeTab === 'monsters'">
           <div class="flex items-center justify-between my-4">
-            <h2 class="text-xl font-semibold">
-              Monsters
-            </h2>
+            <h2 class="text-xl font-semibold">Monsters</h2>
           </div>
           <table class="w-full">
             <thead>
@@ -170,7 +172,14 @@
                 v-for="monster of monsterData.monsters"
                 :class="canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`"
               >
-                <td class="px-4 py-2">{{ monster.name }}</td>
+                <td class="px-4 py-2">
+                  <a
+                    class="hover:underline"
+                    :href="`https://wiki.melvoridle.com/w/${monster.name}`"
+                    target="_blank"
+                    >{{ monster.name }}</a
+                  >
+                </td>
                 <td class="hidden px-4 py-2 md:table-cell">
                   {{ monster.attackStyle }}
                 </td>
@@ -269,7 +278,14 @@
                 v-for="monster of dungeonChoiceMonsters"
                 :class="canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`"
               >
-                <td class="px-4 py-2">{{ monster.name }}</td>
+                <td class="px-4 py-2">
+                  <a
+                    class="hover:underline"
+                    :href="`https://wiki.melvoridle.com/w/${monster.name}`"
+                    target="_blank"
+                    >{{ monster.name }}</a
+                  >
+                </td>
                 <td class="hidden px-4 py-2 md:table-cell">
                   {{ monster.attackStyle }}
                 </td>
@@ -368,7 +384,14 @@
                 v-for="monster of slayerTierMonsters"
                 :class="canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`"
               >
-                <td class="px-4 py-2">{{ monster.name }}</td>
+                <td class="px-4 py-2">
+                  <a
+                    class="hover:underline"
+                    :href="`https://wiki.melvoridle.com/w/${monster.name}`"
+                    target="_blank"
+                    >{{ monster.name }}</a
+                  >
+                </td>
                 <td class="hidden px-4 py-2 md:table-cell">
                   {{ monster.attackStyle }}
                 </td>
@@ -418,7 +441,7 @@ export default defineComponent({
       if (localStorage.autoEatLevel) {
         data.autoEatLevel = localStorage.autoEatLevel;
       }
-      
+
       if (localStorage.slayerTier) {
         data.slayerTier = localStorage.slayerTier;
       }
