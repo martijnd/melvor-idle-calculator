@@ -430,50 +430,19 @@ export default defineComponent({
   components: {},
   setup() {
     onMounted(() => {
-      if (localStorage.totalHealth) {
-        data.totalHealth = localStorage.totalHealth;
-      }
-
-      if (localStorage.currentDR) {
-        data.currentDR = localStorage.currentDR;
-      }
-
-      if (localStorage.autoEatLevel) {
-        data.autoEatLevel = localStorage.autoEatLevel;
-      }
-
-      if (localStorage.slayerTier) {
-        data.slayerTier = localStorage.slayerTier;
-      }
-
-      if (localStorage.combatStyle) {
-        data.combatStyle = localStorage.combatStyle;
-      }
-
-      if (localStorage.wastefulRing) {
-        data.wastefulRing = localStorage.wastefulRing;
-      }
-
-      if (localStorage.guardianAmulet) {
-        data.guardianAmulet = localStorage.guardianAmulet;
-      }
-
-      if (localStorage.dungeonChoice) {
-        data.dungeonChoice = localStorage.dungeonChoice;
-      }
-
-      if (localStorage.activeTab) {
-        data.activeTab = localStorage.activeTab;
-      }
+      Object.keys(data).forEach((attr) => {
+        if (localStorage[attr]) {
+          data[attr] = localStorage[attr];
+        }
+      });
     });
 
-    const data = reactive({
+    const data = reactive<{ [key: string]: any }>({
       slayerTier: "Easy",
       totalHealth: 600,
       currentDR: 20,
       autoEatLevel: 1,
       combatStyle: "Melee",
-      gameMode: "Normal",
       wastefulRing: false,
       guardianAmulet: false,
       dungeonChoice: "Chicken Coop",
@@ -581,30 +550,9 @@ export default defineComponent({
       return 0;
     }
 
-    watch(
-      data,
-      ({
-        totalHealth,
-        currentDR,
-        autoEatLevel,
-        slayerTier,
-        combatStyle,
-        wastefulRing,
-        guardianAmulet,
-        dungeonChoice,
-        activeTab,
-      }) => {
-        localStorage.totalHealth = totalHealth;
-        localStorage.currentDR = currentDR;
-        localStorage.autoEatLevel = autoEatLevel;
-        localStorage.slayerTier = slayerTier;
-        localStorage.combatStyle = combatStyle;
-        localStorage.wastefulRing = wastefulRing;
-        localStorage.guardianAmulet = guardianAmulet;
-        localStorage.dungeonChoice = dungeonChoice;
-        localStorage.activeTab = activeTab;
-      }
-    );
+    watch(data, (data) => {
+      Object.keys(data).forEach((attr) => localStorage[attr] = data[attr]);
+    });
 
     return {
       data,
