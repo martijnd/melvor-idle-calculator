@@ -62,7 +62,7 @@
           </div>
         </div>
         <div class="pb-4 text-sm italic text-center text-gray-300">
-          Auto Eat Threshhold is {{ autoEatTreshhold }} HP
+          Auto Eat Threshhold is {{ Math.floor(autoEatTreshhold) }} HP
         </div>
       </div>
       <div class="bg-[#272727]">
