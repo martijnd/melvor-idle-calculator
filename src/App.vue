@@ -203,7 +203,7 @@ export default defineComponent({
     function getMonster(monsterString: string) {
       return monsterData.monsters.find(
         (monster) => monster.name === monsterString
-      );
+      ) ?? monsterData.monsters[0];
     }
 
     const treshholds = [0.2, 0.3, 0.4];
