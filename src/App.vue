@@ -87,6 +87,16 @@
           >
             Dungeons
           </button>
+          <button
+            :class="`tab border px-4 py-2 rounded-tr flex-1 hover:bg-[#444] ${
+              activeTab === 'slayer'
+                ? 'font-bold bg-[#121212]'
+                : 'bg-[#272727]'
+            }`"
+            @click="activeTab = 'slayer'"
+          >
+            Slayer
+          </button>
         </div>
         <div class="p-4" v-if="activeTab === 'monsters'">
           <h2 class="text-xl font-semibold">Monsters</h2>
@@ -133,7 +143,7 @@
           </table>
         </div>
         <div class="p-4" v-if="activeTab === 'dungeons'">
-          <h2 class="mb-2 text-xl font-semibold">Dungeons</h2>
+          <h2 class="text-xl font-semibold mb-4">Dungeons</h2>
           <select
             id="dungeon"
             class="text-white px-4 py-2 rounded bg-[#474747]"
@@ -167,6 +177,64 @@
             <tbody>
               <tr
                 v-for="monster of dungeonChoiceMonsters"
+                :class="
+                  canIdle(getMonster(monster)) ? `bg-[#6b2727]` : `bg-[#1a7c43]`
+                "
+              >
+                <td class="px-4 py-2">{{ getMonster(monster).name }}</td>
+                <td class="hidden px-4 py-2 md:table-cell">
+                  {{ getMonster(monster).attackStyle }}
+                </td>
+                <td
+                  class="hidden px-4 py-2 text-right tabular-nums md:table-cell"
+                >
+                  {{ getMonster(monster).maxHit }}
+                </td>
+                <td class="px-4 py-2 text-right tabular-nums">
+                  ({{ getReducedMaxHit(getMonster(monster)) }})
+                </td>
+                <td class="px-4 py-2">
+                  {{ getDRNeeded(getMonster(monster)) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="p-4" v-if="activeTab === 'slayer'">
+          <h2 class="text-xl font-semibold mb-4">Slayer</h2>
+          <select
+            id="slayer"
+            class="text-white px-4 py-2 rounded bg-[#474747]"
+            v-model="data.slayerTier"
+          >
+            <option
+              v-for="tier of monsterData.slayerTiers"
+              :value="tier.name"
+            >
+              {{ tier.name }}
+            </option>
+          </select>
+          <table class="w-full">
+            <thead>
+              <tr>
+                <th class="px-4 py-2 text-left">Name</th>
+                <th class="hidden px-4 py-2 text-left md:table-cell">
+                  Attack style
+                </th>
+                <th
+                  class="hidden px-4 py-2 text-right tabular-nums md:table-cell"
+                >
+                  Max hit
+                </th>
+                <th class="px-4 py-2 text-right tabular-nums">
+                  Reduced Max hit
+                </th>
+                <th class="px-4 py-2 text-right tabular-nums">DR needed (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="monster of slayerTierMonsters"
                 :class="
                   canIdle(getMonster(monster)) ? `bg-[#6b2727]` : `bg-[#1a7c43]`
                 "
@@ -248,6 +316,13 @@ export default defineComponent({
       () =>
         monsterData.dungeons.find(
           (dungeon) => dungeon.name === data.dungeonChoice
+        )?.monsters
+    );
+    
+    const slayerTierMonsters = computed(
+      () =>
+        monsterData.slayerTiers.find(
+          (dungeon) => dungeon.name === data.slayerTier
         )?.monsters
     );
 
@@ -345,6 +420,7 @@ export default defineComponent({
       getDRNeeded,
       getReducedMaxHit,
       dungeonChoiceMonsters,
+      slayerTierMonsters,
       getMonster,
     };
   },
