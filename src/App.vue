@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-[#121212] min-h-screen text-white">
-    <div class="relative max-w-screen-lg py-4 mx-auto px-4">
+  <div class="bg-[#121212] min-h-screen text-white flex flex-col">
+    <div class="relative max-w-screen-lg py-4 mx-auto px-4 flex-1">
       <h1 class="text-2xl font-bold text-center">Idle calculator</h1>
       <hr class="my-4" />
       <div class="sticky top-0 bg-[#121212] mb-1">
@@ -144,7 +144,8 @@
         </div>
         <div class="p-4" v-if="data.activeTab === 'dungeons'">
           <div class="flex justify-between my-4 items-center">
-            <h2 class="text-xl font-semibold">Dungeons
+            <h2 class="text-xl font-semibold">
+              Dungeons
               <svg
                 v-if="canIdleDungeon"
                 class="inline text-[#1a7c43]"
@@ -341,6 +342,9 @@
         </div>
       </div>
     </div>
+    <footer class="text-center py-4 border-t border-[#272727] text-[#686868]">
+      Made by <a class="hover:underline" href="https://www.martijndorsman.nl">Martijn Dorsman</a>
+    </footer>
   </div>
 </template>
 
@@ -350,7 +354,6 @@ import {
   defineComponent,
   onMounted,
   reactive,
-  ref,
   watch,
 } from "vue";
 import { Monster, monsterData } from "./data";
@@ -398,18 +401,16 @@ export default defineComponent({
       activeTab: "monsters",
     });
 
-    const dungeonChoiceMonsters = computed(
-      () =>
-        monsterData.dungeons.find(
-          (dungeon) => dungeon.name === data.dungeonChoice
-        )?.monsters.map(getMonster)
+    const dungeonChoiceMonsters = computed(() =>
+      monsterData.dungeons
+        .find((dungeon) => dungeon.name === data.dungeonChoice)
+        ?.monsters.map(getMonster)
     );
 
-    const slayerTierMonsters = computed(
-      () =>
-        monsterData.slayerTiers.find(
-          (dungeon) => dungeon.name === data.slayerTier
-        )?.monsters.map(getMonster)
+    const slayerTierMonsters = computed(() =>
+      monsterData.slayerTiers
+        .find((dungeon) => dungeon.name === data.slayerTier)
+        ?.monsters.map(getMonster)
     );
 
     function getMonster(monsterString: string) {
@@ -528,7 +529,7 @@ export default defineComponent({
       slayerTierMonsters,
       getMonster,
       canIdleSlayerTier,
-      canIdleDungeon
+      canIdleDungeon,
     };
   },
 });
