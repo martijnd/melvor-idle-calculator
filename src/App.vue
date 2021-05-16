@@ -71,7 +71,7 @@
                 v-model="data.wastefulRing"
               >
                 <option v-for="value of ['Yes', 'No']" :value="value">
-                  {{ value  }}
+                  {{ value }}
                 </option>
               </select>
             </label>
@@ -441,11 +441,7 @@ export default defineComponent({
     onMounted(() => {
       Object.keys(data).forEach((attr) => {
         if (localStorage[attr]) {
-          if (["true", "false"].includes(localStorage[attr])) {
-            data[attr] = localStorage[attr] === 'true';
-          } else {
-            data[attr] = localStorage[attr];
-          }
+          data[attr] = localStorage[attr];
         }
       });
     });
@@ -487,7 +483,8 @@ export default defineComponent({
 
     const autoEatTreshold = computed(() => {
       return (
-        (tresholds[data.autoEatLevel - 1] + (data.wastefulRing === "Yes" ? 0.05 : 0)) *
+        (tresholds[data.autoEatLevel - 1] +
+          (data.wastefulRing === "Yes" ? 0.05 : 0)) *
         data.totalHealth
       );
     });
@@ -565,7 +562,7 @@ export default defineComponent({
     }
 
     watch(data, (data) => {
-      Object.keys(data).forEach((attr) => localStorage[attr] = data[attr]);
+      Object.keys(data).forEach((attr) => (localStorage[attr] = data[attr]));
     });
 
     return {
