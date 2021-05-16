@@ -70,8 +70,8 @@
                 class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
                 v-model="data.wastefulRing"
               >
-                <option v-for="value of ['Yes', 'No']" :value="value === 'Yes'">
-                  {{ value }}
+                <option v-for="value of ['Yes', 'No']" :value="value">
+                  {{ value  }}
                 </option>
               </select>
             </label>
@@ -82,7 +82,7 @@
                 class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
                 v-model="data.guardianAmulet"
               >
-                <option v-for="value of ['Yes', 'No']" :value="value === 'Yes'">
+                <option v-for="value of ['Yes', 'No']" :value="value">
                   {{ value }}
                 </option>
               </select>
@@ -456,8 +456,8 @@ export default defineComponent({
       currentDR: 20,
       autoEatLevel: 1,
       combatStyle: "Melee",
-      wastefulRing: false,
-      guardianAmulet: false,
+      wastefulRing: "No",
+      guardianAmulet: "No",
       dungeonChoice: "Chicken Coop",
       activeTab: "monsters",
       inputsVisible: true,
@@ -487,7 +487,7 @@ export default defineComponent({
 
     const autoEatTreshold = computed(() => {
       return (
-        (tresholds[data.autoEatLevel - 1] + (data.wastefulRing ? 0.05 : 0)) *
+        (tresholds[data.autoEatLevel - 1] + (data.wastefulRing === "Yes" ? 0.05 : 0)) *
         data.totalHealth
       );
     });
@@ -519,7 +519,7 @@ export default defineComponent({
     function getNettoDR(monsterAttackStyle: Monster["attackStyle"]) {
       return (
         getMultiplier(monsterAttackStyle) *
-        (Number(data.currentDR) + (data.guardianAmulet ? 5 : 0))
+        (Number(data.currentDR) + (data.guardianAmulet === "Yes" ? 5 : 0))
       );
     }
 
