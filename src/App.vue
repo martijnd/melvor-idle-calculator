@@ -134,13 +134,35 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, reactive, ref, watch } from "vue";
 import { Monster, monsterData } from "./data";
 
 export default defineComponent({
   name: "App",
   components: {},
   setup() {
+    onMounted(() => {
+      if (localStorage.totalHealth) {
+        data.totalHealth = localStorage.totalHealth;
+      }
+
+      if (localStorage.currentDR) {
+        data.currentDR = localStorage.currentDR;
+      }
+
+      if (localStorage.autoEatLevel) {
+        data.autoEatLevel = localStorage.autoEatLevel;
+      }
+
+      if (localStorage.combatStyle) {
+        data.combatStyle = localStorage.combatStyle;
+      }
+
+      if (localStorage.dungeonChoice) {
+        data.dungeonChoice = localStorage.dungeonChoice;
+      }
+    });
+
     const data = reactive({
       slayerTier: "Easy",
       totalHealth: 600,
