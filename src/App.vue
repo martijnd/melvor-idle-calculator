@@ -20,7 +20,7 @@
               />
             </label>
             <label for="currentDR" class="w-1/2">
-              <div class="mb-1 font-semibold">Current DR</div>
+              <div class="mb-1 font-semibold">Current DR (%)</div>
               <input
                 id="currentDR"
                 class="text-white px-4 py-2 rounded bg-[#272727] w-full"
