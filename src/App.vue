@@ -1,9 +1,9 @@
 <template>
-  <div class="bg-[#121212] min-h-screen text-white flex flex-col">
-    <div class="relative max-w-screen-lg py-4 mx-auto px-4 flex-1">
-      <h1 class="text-2xl font-bold text-center">Idle calculator</h1>
+  <div class="flex flex-col min-h-screen text-white bg-dark">
+    <div class="relative flex-1 max-w-screen-lg px-4 py-4 mx-auto">
+      <h1 class="text-2xl font-bold text-center">Melvor Idle calculator</h1>
       <hr class="my-4" />
-      <div class="sticky top-0 bg-[#121212] mb-1">
+      <div class="sticky top-0 mb-1 bg-dark">
         <div
           v-if="data.inputsVisible"
           class="flex flex-col justify-center py-4 mt-4 space-y-4 md:flex-row md:space-x-4 md:space-y-0"
@@ -13,7 +13,7 @@
               <div class="mb-1 font-semibold">Total health</div>
               <input
                 id="totalHealth"
-                class="text-white px-4 py-2 rounded bg-[#272727] w-full"
+                class="w-full px-4 py-2 text-white rounded bg-dark-light"
                 type="number"
                 step="10"
                 min="0"
@@ -24,7 +24,7 @@
               <div class="mb-1 font-semibold">Current DR (%)</div>
               <input
                 id="currentDR"
-                class="text-white px-4 py-2 rounded bg-[#272727] w-full"
+                class="w-full px-4 py-2 text-white rounded bg-dark-light"
                 type="number"
                 step="1"
                 min="0"
@@ -37,7 +37,7 @@
               <div class="mb-1 font-semibold">Auto Eat</div>
               <select
                 id="autoEatLevel"
-                class="text-white px-4 py-2 rounded bg-[#272727] h-10 w-full"
+                class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
                 v-model="data.autoEatLevel"
               >
                 <option v-for="value of [1, 2, 3]" :value="value">
@@ -49,7 +49,7 @@
               <div class="mb-1 font-semibold">Combat style</div>
               <select
                 id="combatStyle"
-                class="text-white px-4 py-2 rounded bg-[#272727] h-10 w-full"
+                class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
                 v-model="data.combatStyle"
               >
                 <option
@@ -66,7 +66,7 @@
               <div class="mb-1 font-semibold">Wasteful ring</div>
               <select
                 id="wastefulRing"
-                class="text-white px-4 py-2 rounded bg-[#272727] h-10 w-full"
+                class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
                 v-model="data.wastefulRing"
               >
                 <option v-for="value of [true, false]" :value="value">
@@ -78,7 +78,7 @@
               <div class="mb-1 font-semibold">Guardian amulet</div>
               <select
                 id="guardianAmulet"
-                class="text-white px-4 py-2 rounded bg-[#272727] h-10 w-full"
+                class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
                 v-model="data.guardianAmulet"
               >
                 <option v-for="value of [true, false]" :value="value">
@@ -88,7 +88,7 @@
             </label>
           </div>
         </div>
-        <div class="py-2 flex items-center justify-between text-sm italic text-center text-gray-300">
+        <div class="flex items-center justify-between py-2 text-sm italic text-center text-gray-300">
           <span>Auto Eat Threshold is {{ Math.floor(autoEatTreshold) }} HP</span>
           <button
             :class="`bottom-2 right-0 transform ${
@@ -108,33 +108,33 @@
           </button>
         </div>
       </div>
-      <div class="bg-[#272727]">
+      <div class="rounded bg-dark-light">
         <div id="tabs" class="flex">
           <button
-            :class="`tab border border-r-0 px-4 py-2 rounded-tl flex-1 hover:bg-[#444] ${
+            :class="`tab border border-r-0 px-4 py-2 rounded-tl flex-1 hover:bg-dark-lighter ${
               data.activeTab === 'monsters'
-                ? 'font-bold bg-[#121212]'
-                : 'bg-[#272727]'
+                ? 'font-bold bg-dark'
+                : 'bg-dark-light'
             }`"
             @click="data.activeTab = 'monsters'"
           >
             Monsters
           </button>
           <button
-            :class="`tab border px-4 py-2 border-r-0 flex-1 hover:bg-[#444] ${
+            :class="`tab border px-4 py-2 border-r-0 flex-1 hover:bg-dark-lighter ${
               data.activeTab === 'dungeons'
-                ? 'font-bold bg-[#121212]'
-                : 'bg-[#272727]'
+                ? 'font-bold bg-dark'
+                : 'bg-dark-light'
             }`"
             @click="data.activeTab = 'dungeons'"
           >
             Dungeons
           </button>
           <button
-            :class="`tab border px-4 py-2 rounded-tr flex-1 hover:bg-[#444] ${
+            :class="`tab border px-4 py-2 rounded-tr flex-1 hover:bg-dark-lighter ${
               data.activeTab === 'slayer'
-                ? 'font-bold bg-[#121212]'
-                : 'bg-[#272727]'
+                ? 'font-bold bg-dark'
+                : 'bg-dark-light'
             }`"
             @click="data.activeTab = 'slayer'"
           >
@@ -142,7 +142,11 @@
           </button>
         </div>
         <div class="p-4" v-if="data.activeTab === 'monsters'">
-          <h2 class="text-xl font-semibold">Monsters</h2>
+          <div class="flex items-center justify-between my-4">
+            <h2 class="text-xl font-semibold">
+              Monsters
+            </h2>
+          </div>
           <table class="w-full">
             <thead>
               <tr>
@@ -186,7 +190,7 @@
           </table>
         </div>
         <div class="p-4" v-if="data.activeTab === 'dungeons'">
-          <div class="flex justify-between my-4 items-center">
+          <div class="flex items-center justify-between my-4">
             <h2 class="text-xl font-semibold">
               Dungeons
               <svg
@@ -277,7 +281,7 @@
                 <td class="px-4 py-2 text-right tabular-nums">
                   ({{ getReducedMaxHit(monster) }})
                 </td>
-                <td class="px-4 py-2">
+                <td class="px-4 py-2 text-right tabular-nums">
                   {{ getDRNeeded(monster) }}
                 </td>
               </tr>
@@ -285,7 +289,7 @@
           </table>
         </div>
         <div class="p-4" v-if="data.activeTab === 'slayer'">
-          <div class="flex justify-between my-4 items-center">
+          <div class="flex items-center justify-between my-4">
             <h2 class="text-xl font-semibold">
               Slayer
               <svg
@@ -376,7 +380,7 @@
                 <td class="px-4 py-2 text-right tabular-nums">
                   ({{ getReducedMaxHit(monster) }})
                 </td>
-                <td class="px-4 py-2">
+                <td class="px-4 py-2 text-right tabular-nums">
                   {{ getDRNeeded(monster) }}
                 </td>
               </tr>
@@ -413,6 +417,10 @@ export default defineComponent({
 
       if (localStorage.autoEatLevel) {
         data.autoEatLevel = localStorage.autoEatLevel;
+      }
+      
+      if (localStorage.slayerTier) {
+        data.slayerTier = localStorage.slayerTier;
       }
 
       if (localStorage.combatStyle) {
@@ -538,11 +546,7 @@ export default defineComponent({
       return false;
     });
 
-    function getDRNeeded(monster: Monster | string) {
-      if (typeof monster === "string") {
-        monster = getMonster(monster);
-      }
-
+    function getDRNeeded(monster: Monster) {
       for (let i = 0; i < 100; i++) {
         if (
           autoEatTreshold.value > Math.floor(monster.maxHit * (1 - i / 100))
@@ -560,6 +564,7 @@ export default defineComponent({
         totalHealth,
         currentDR,
         autoEatLevel,
+        slayerTier,
         combatStyle,
         wastefulRing,
         guardianAmulet,
@@ -569,6 +574,7 @@ export default defineComponent({
         localStorage.totalHealth = totalHealth;
         localStorage.currentDR = currentDR;
         localStorage.autoEatLevel = autoEatLevel;
+        localStorage.slayerTier = slayerTier;
         localStorage.combatStyle = combatStyle;
         localStorage.wastefulRing = wastefulRing;
         localStorage.guardianAmulet = guardianAmulet;
