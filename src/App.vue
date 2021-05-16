@@ -1,74 +1,88 @@
 <template>
-  <div class="bg-[#121212] min-h-screen text-white p-4">
-    <div class="relative max-w-screen-lg py-4 mx-auto">
+  <div class="bg-[#121212] min-h-screen text-white">
+    <div class="relative max-w-screen-lg py-4 mx-auto px-4">
       <h1 class="text-2xl font-bold text-center">Idle calculator</h1>
-      <hr class="my-4">
+      <hr class="my-4" />
       <div class="sticky top-0 bg-[#121212] mb-1">
-        <div class="flex flex-col justify-center py-4 mt-4 space-y-4 md:flex-row md:space-x-4 md:space-y-0">
-          <label for="totalHealth">
-            <div class="mb-1 font-semibold">Total health</div>
-            <input
-              id="totalHealth"
-              class="text-white px-4 py-2 rounded bg-[#272727]"
-              type="number"
-              step="10"
-              min="0"
-              v-model="data.totalHealth"
-            />
-          </label>
-          <label for="currentDR">
-            <div class="mb-1 font-semibold">Current DR</div>
-            <input
-              id="currentDR"
-              class="text-white px-4 py-2 rounded bg-[#272727]"
-              type="number"
-              step="1"
-              min="0"
-              v-model="data.currentDR"
-            />
-          </label>
-          <label for="autoEatLevel">
-            <div class="mb-1 font-semibold">Auto Eat</div>
-            <select
-              id="autoEatLevel"
-              class="text-white px-4 py-2 rounded bg-[#272727]"
-              v-model="data.autoEatLevel"
-            >
-              <option v-for="value of [1, 2, 3]" :value="value">
-                Level {{ value }}
-              </option>
-            </select>
-          </label>
-          <label for="combatStyle">
-            <div class="mb-1 font-semibold">Combat style</div>
-            <select
-              id="combatStyle"
-              class="text-white px-4 py-2 rounded bg-[#272727]"
-              v-model="data.combatStyle"
-            >
-              <option
-                v-for="value of ['Melee', 'Ranged', 'Magic']"
-                :value="value"
+        <div
+          class="flex flex-col justify-center py-4 mt-4 space-y-4 md:flex-row md:space-x-4 md:space-y-0"
+        >
+          <div class="flex space-x-4">
+            <label for="totalHealth" class="w-1/2">
+              <div class="mb-1 font-semibold">Total health</div>
+              <input
+                id="totalHealth"
+                class="text-white px-4 py-2 rounded bg-[#272727] w-full"
+                type="number"
+                step="10"
+                min="0"
+                v-model="data.totalHealth"
+              />
+            </label>
+            <label for="currentDR" class="w-1/2">
+              <div class="mb-1 font-semibold">Current DR</div>
+              <input
+                id="currentDR"
+                class="text-white px-4 py-2 rounded bg-[#272727] w-full"
+                type="number"
+                step="1"
+                min="0"
+                v-model="data.currentDR"
+              />
+            </label>
+          </div>
+          <div class="flex space-x-4">
+            <label for="autoEatLevel" class="w-1/2">
+              <div class="mb-1 font-semibold">Auto Eat</div>
+              <select
+                id="autoEatLevel"
+                class="text-white px-4 py-2 rounded bg-[#272727] h-10 w-full"
+                v-model="data.autoEatLevel"
               >
-                {{ value }}
-              </option>
-            </select>
-          </label>
+                <option v-for="value of [1, 2, 3]" :value="value">
+                  Level {{ value }}
+                </option>
+              </select>
+            </label>
+            <label for="combatStyle" class="w-1/2">
+              <div class="mb-1 font-semibold">Combat style</div>
+              <select
+                id="combatStyle"
+                class="text-white px-4 py-2 rounded bg-[#272727] h-10 w-full"
+                v-model="data.combatStyle"
+              >
+                <option
+                  v-for="value of ['Melee', 'Ranged', 'Magic']"
+                  :value="value"
+                >
+                  {{ value }}
+                </option>
+              </select>
+            </label>
+          </div>
         </div>
         <div class="pb-4 text-sm italic text-center text-gray-300">
-        Auto Eat Threshhold is {{autoEatTreshhold}} HP
-      </div>
+          Auto Eat Threshhold is {{ autoEatTreshhold }} HP
+        </div>
       </div>
       <div class="bg-[#272727]">
         <div id="tabs" class="flex">
           <button
-            :class="`tab border border-r-0 px-4 py-2 rounded-tl flex-1 hover:bg-[#444] ${activeTab === 'monsters' ? 'font-bold bg-[#121212]' : 'bg-[#272727]' }`"
+            :class="`tab border border-r-0 px-4 py-2 rounded-tl flex-1 hover:bg-[#444] ${
+              activeTab === 'monsters'
+                ? 'font-bold bg-[#121212]'
+                : 'bg-[#272727]'
+            }`"
             @click="activeTab = 'monsters'"
           >
             Monsters
           </button>
           <button
-            :class="`tab border px-4 py-2 rounded-tr flex-1 hover:bg-[#444] ${activeTab === 'dungeons' ? 'font-bold bg-[#121212]' : 'bg-[#272727]' }`"
+            :class="`tab border px-4 py-2 rounded-tr flex-1 hover:bg-[#444] ${
+              activeTab === 'dungeons'
+                ? 'font-bold bg-[#121212]'
+                : 'bg-[#272727]'
+            }`"
             @click="activeTab = 'dungeons'"
           >
             Dungeons
@@ -80,9 +94,17 @@
             <thead>
               <tr>
                 <th class="px-4 py-2 text-left">Name</th>
-                <th class="hidden px-4 py-2 text-left md:table-cell">Attack style</th>
-                <th class="hidden px-4 py-2 text-right tabular-nums md:table-cell">Max hit</th>
-                <th class="px-4 py-2 text-right tabular-nums">Reduced Max hit</th>
+                <th class="hidden px-4 py-2 text-left md:table-cell">
+                  Attack style
+                </th>
+                <th
+                  class="hidden px-4 py-2 text-right tabular-nums md:table-cell"
+                >
+                  Max hit
+                </th>
+                <th class="px-4 py-2 text-right tabular-nums">
+                  Reduced Max hit
+                </th>
                 <th class="px-4 py-2 text-right tabular-nums">DR needed</th>
               </tr>
             </thead>
@@ -92,10 +114,20 @@
                 :class="canIdle(monster) ? `bg-[#6b2727]` : `bg-[#1a7c43]`"
               >
                 <td class="px-4 py-2">{{ monster.name }}</td>
-                <td class="hidden px-4 py-2 md:table-cell">{{ monster.attackStyle }}</td>
-                <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">{{ monster.maxHit }}</td>
-                <td class="px-4 py-2 text-right tabular-nums">({{ getReducedMaxHit(monster) }})</td>
-                <td class="px-4 py-2 text-right tabular-nums">{{ getDRNeeded(monster) }}</td>
+                <td class="hidden px-4 py-2 md:table-cell">
+                  {{ monster.attackStyle }}
+                </td>
+                <td
+                  class="hidden px-4 py-2 text-right tabular-nums md:table-cell"
+                >
+                  {{ monster.maxHit }}
+                </td>
+                <td class="px-4 py-2 text-right tabular-nums">
+                  ({{ getReducedMaxHit(monster) }})
+                </td>
+                <td class="px-4 py-2 text-right tabular-nums">
+                  {{ getDRNeeded(monster) }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -107,7 +139,10 @@
             class="text-white px-4 py-2 rounded bg-[#474747]"
             v-model="data.dungeonChoice"
           >
-            <option v-for="dungeon of monsterData.dungeons" :value="dungeon.name">
+            <option
+              v-for="dungeon of monsterData.dungeons"
+              :value="dungeon.name"
+            >
               {{ dungeon.name }}
             </option>
           </select>
@@ -115,9 +150,17 @@
             <thead>
               <tr>
                 <th class="px-4 py-2 text-left">Name</th>
-                <th class="hidden px-4 py-2 text-left md:table-cell">Attack style</th>
-                <th class="hidden px-4 py-2 text-right tabular-nums md:table-cell">Max hit</th>
-                <th class="px-4 py-2 text-right tabular-nums">Reduced Max hit</th>
+                <th class="hidden px-4 py-2 text-left md:table-cell">
+                  Attack style
+                </th>
+                <th
+                  class="hidden px-4 py-2 text-right tabular-nums md:table-cell"
+                >
+                  Max hit
+                </th>
+                <th class="px-4 py-2 text-right tabular-nums">
+                  Reduced Max hit
+                </th>
                 <th class="px-4 py-2 text-right tabular-nums">DR needed (%)</th>
               </tr>
             </thead>
@@ -129,12 +172,20 @@
                 "
               >
                 <td class="px-4 py-2">{{ getMonster(monster).name }}</td>
-                <td class="hidden px-4 py-2 md:table-cell">{{ getMonster(monster).attackStyle }}</td>
-                <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">{{ getMonster(monster).maxHit }}</td>
+                <td class="hidden px-4 py-2 md:table-cell">
+                  {{ getMonster(monster).attackStyle }}
+                </td>
+                <td
+                  class="hidden px-4 py-2 text-right tabular-nums md:table-cell"
+                >
+                  {{ getMonster(monster).maxHit }}
+                </td>
                 <td class="px-4 py-2 text-right tabular-nums">
                   ({{ getReducedMaxHit(getMonster(monster)) }})
                 </td>
-                <td class="px-4 py-2">{{ getDRNeeded(getMonster(monster)) }}</td>
+                <td class="px-4 py-2">
+                  {{ getDRNeeded(getMonster(monster)) }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -201,9 +252,11 @@ export default defineComponent({
     );
 
     function getMonster(monsterString: string) {
-      return monsterData.monsters.find(
-        (monster) => monster.name === monsterString
-      ) ?? monsterData.monsters[0];
+      return (
+        monsterData.monsters.find(
+          (monster) => monster.name === monsterString
+        ) ?? monsterData.monsters[0]
+      );
     }
 
     const treshholds = [0.2, 0.3, 0.4];
