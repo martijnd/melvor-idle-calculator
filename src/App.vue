@@ -153,7 +153,7 @@
           <table class="w-full">
             <thead>
               <tr>
-                <th class="px-4 py-2 text-left hidden md:table-cell"></th>
+                <th class="hidden px-4 py-2 text-left md:table-cell"></th>
                 <th class="px-4 py-2 text-left">Name</th>
                 <th class="hidden px-4 py-2 text-left md:table-cell">
                   Attack style
@@ -174,9 +174,9 @@
                 v-for="monster of monsterData.monsters"
                 :class="canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`"
               >
-                <td class="px-4 hidden md:table-cell">
+                <td class="hidden px-4 md:table-cell">
                   <img
-                    class="h-10 w-10"
+                    class="w-10 h-10"
                     :src="`https://cdn.melvor.net/core/v018/assets/media/monsters/${monster.image}`"
                     :alt="monster.name"
                   />
@@ -514,10 +514,10 @@ export default defineComponent({
     }
 
     function getNettoDR(monsterAttackStyle: Monster["attackStyle"]) {
-      return Math.floor((
+      return Math.floor(
         getMultiplier(monsterAttackStyle) *
-        (Number(data.currentDR) + (data.guardianAmulet === "Yes" ? 5 : 0))
-      ));
+          (Number(data.currentDR) + (data.guardianAmulet === "Yes" ? 5 : 0))
+      );
     }
 
     function getReducedMaxHit({ maxHit, attackStyle }: Monster) {
