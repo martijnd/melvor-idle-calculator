@@ -5,6 +5,7 @@
       <hr class="my-4" />
       <div class="sticky top-0 bg-[#121212] mb-1">
         <div
+          v-if="data.inputsVisible"
           class="flex flex-col justify-center py-4 mt-4 space-y-4 md:flex-row md:space-x-4 md:space-y-0"
         >
           <div class="flex space-x-4 md:w-1/2">
@@ -69,7 +70,7 @@
                 v-model="data.wastefulRing"
               >
                 <option v-for="value of [true, false]" :value="value">
-                  {{ value ? 'Yes' : 'No' }}
+                  {{ value ? "Yes" : "No" }}
                 </option>
               </select>
             </label>
@@ -81,14 +82,30 @@
                 v-model="data.guardianAmulet"
               >
                 <option v-for="value of [true, false]" :value="value">
-                  {{ value ? 'Yes' : 'No' }}
+                  {{ value ? "Yes" : "No" }}
                 </option>
               </select>
             </label>
           </div>
         </div>
-        <div class="pb-4 text-sm italic text-center text-gray-300">
-          Auto Eat Threshold is {{ Math.floor(autoEatTreshold) }} HP
+        <div class="py-2 flex items-center justify-between text-sm italic text-center text-gray-300">
+          <span>Auto Eat Threshold is {{ Math.floor(autoEatTreshold) }} HP</span>
+          <button
+            :class="`bottom-2 right-0 transform ${
+              data.inputsVisible ? 'rotate-180' : ''
+            }`"
+            @click="data.inputsVisible = !data.inputsVisible"
+          >
+            <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M15.25 10.75L12 14.25L8.75 10.75"
+              ></path>
+            </svg>
+          </button>
         </div>
       </div>
       <div class="bg-[#272727]">
@@ -104,7 +121,7 @@
             Monsters
           </button>
           <button
-            :class="`tab border px-4 py-2 rounded-tr flex-1 hover:bg-[#444] ${
+            :class="`tab border px-4 py-2 border-r-0 flex-1 hover:bg-[#444] ${
               data.activeTab === 'dungeons'
                 ? 'font-bold bg-[#121212]'
                 : 'bg-[#272727]'
@@ -369,19 +386,16 @@
       </div>
     </div>
     <footer class="text-center py-4 border-t border-[#272727] text-[#686868]">
-      Made by <a class="hover:underline" href="https://www.martijndorsman.nl">Martijn Dorsman</a>
+      Made by
+      <a class="hover:underline" href="https://www.martijndorsman.nl"
+        >Martijn Dorsman</a
+      >
     </footer>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  reactive,
-  watch,
-} from "vue";
+import { computed, defineComponent, onMounted, reactive, watch } from "vue";
 import { Monster, monsterData } from "./data";
 
 export default defineComponent({
@@ -404,11 +418,11 @@ export default defineComponent({
       if (localStorage.combatStyle) {
         data.combatStyle = localStorage.combatStyle;
       }
-      
+
       if (localStorage.wastefulRing) {
         data.wastefulRing = localStorage.wastefulRing;
       }
-      
+
       if (localStorage.guardianAmulet) {
         data.guardianAmulet = localStorage.guardianAmulet;
       }
@@ -433,6 +447,7 @@ export default defineComponent({
       guardianAmulet: false,
       dungeonChoice: "Chicken Coop",
       activeTab: "monsters",
+      inputsVisible: true,
     });
 
     const dungeonChoiceMonsters = computed(() =>
@@ -457,11 +472,12 @@ export default defineComponent({
 
     const tresholds = [0.2, 0.3, 0.4];
 
-    const autoEatTreshold = computed(
-      () => {
-        return (tresholds[data.autoEatLevel - 1] + (data.wastefulRing ? 0.05 : 0)) * data.totalHealth;
-      }
-    );
+    const autoEatTreshold = computed(() => {
+      return (
+        (tresholds[data.autoEatLevel - 1] + (data.wastefulRing ? 0.05 : 0)) *
+        data.totalHealth
+      );
+    });
 
     function getMultiplier(monsterAttackStyle: Monster["attackStyle"]) {
       const multipliers: any = {
@@ -488,7 +504,10 @@ export default defineComponent({
     }
 
     function getNettoDR(monsterAttackStyle: Monster["attackStyle"]) {
-      return getMultiplier(monsterAttackStyle) * (Number(data.currentDR) + (data.guardianAmulet ? 5 : 0));
+      return (
+        getMultiplier(monsterAttackStyle) *
+        (Number(data.currentDR) + (data.guardianAmulet ? 5 : 0))
+      );
     }
 
     function getReducedMaxHit({ maxHit, attackStyle }: Monster) {
