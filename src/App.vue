@@ -133,7 +133,7 @@
                   {{ monster.maxHit }}
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
-                  ({{ getReducedMaxHit(getMonster(monster)) }})
+                  ({{ getReducedMaxHit(monster) }})
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
                   {{ getDRNeeded(monster) }}
@@ -232,7 +232,7 @@
                   {{ monster.maxHit }}
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
-                  ({{ getReducedMaxHit(getMonster(monster)) }})
+                  ({{ getReducedMaxHit(monster) }})
                 </td>
                 <td class="px-4 py-2">
                   {{ getDRNeeded(monster) }}
@@ -331,7 +331,7 @@
                   {{ monster.maxHit }}
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
-                  ({{ getReducedMaxHit(getMonster(monster)) }})
+                  ({{ getReducedMaxHit(monster) }})
                 </td>
                 <td class="px-4 py-2">
                   {{ getDRNeeded(monster) }}
@@ -455,7 +455,7 @@ export default defineComponent({
       return getMultiplier(monsterAttackStyle) * data.currentDR;
     }
 
-    function getReducedMaxHit({ maxHit, attackStyle, name }: Monster) {
+    function getReducedMaxHit({ maxHit, attackStyle }: Monster) {
       return Math.floor(maxHit * (1 - getNettoDR(attackStyle) / 100));
     }
 
