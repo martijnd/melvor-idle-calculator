@@ -520,7 +520,7 @@ export default defineComponent({
       ));
     }
 
-    function getReducedMaxHit({ name, maxHit, attackStyle }: Monster) {
+    function getReducedMaxHit({ maxHit, attackStyle }: Monster) {
       return Math.floor(maxHit * (1 - getNettoDR(attackStyle) / 100));
     }
 
