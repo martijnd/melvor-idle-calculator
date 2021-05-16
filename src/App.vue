@@ -134,7 +134,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref } from "vue";
+import { computed, defineComponent, reactive, ref, watch } from "vue";
 import { Monster, monsterData } from "./data";
 
 export default defineComponent({
@@ -223,6 +223,14 @@ export default defineComponent({
 
       return 0;
     }
+
+    watch(data, ({totalHealth, currentDR, autoEatLevel, combatStyle, dungeonChoice}) => {
+      localStorage.totalHealth = totalHealth; 
+      localStorage.currentDR = currentDR;
+      localStorage.autoEatLevel = autoEatLevel;
+      localStorage.combatStyle = combatStyle;
+      localStorage.dungeonChoice = dungeonChoice;
+    })
 
     return {
       data,
