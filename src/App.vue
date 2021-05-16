@@ -69,36 +69,36 @@
         <div id="tabs" class="flex">
           <button
             :class="`tab border border-r-0 px-4 py-2 rounded-tl flex-1 hover:bg-[#444] ${
-              activeTab === 'monsters'
+              data.activeTab === 'monsters'
                 ? 'font-bold bg-[#121212]'
                 : 'bg-[#272727]'
             }`"
-            @click="activeTab = 'monsters'"
+            @click="data.activeTab = 'monsters'"
           >
             Monsters
           </button>
           <button
             :class="`tab border px-4 py-2 rounded-tr flex-1 hover:bg-[#444] ${
-              activeTab === 'dungeons'
+              data.activeTab === 'dungeons'
                 ? 'font-bold bg-[#121212]'
                 : 'bg-[#272727]'
             }`"
-            @click="activeTab = 'dungeons'"
+            @click="data.activeTab = 'dungeons'"
           >
             Dungeons
           </button>
           <button
             :class="`tab border px-4 py-2 rounded-tr flex-1 hover:bg-[#444] ${
-              activeTab === 'slayer'
+              data.activeTab === 'slayer'
                 ? 'font-bold bg-[#121212]'
                 : 'bg-[#272727]'
             }`"
-            @click="activeTab = 'slayer'"
+            @click="data.activeTab = 'slayer'"
           >
             Slayer
           </button>
         </div>
-        <div class="p-4" v-if="activeTab === 'monsters'">
+        <div class="p-4" v-if="data.activeTab === 'monsters'">
           <h2 class="text-xl font-semibold">Monsters</h2>
           <table class="w-full">
             <thead>
@@ -121,7 +121,9 @@
             <tbody>
               <tr
                 v-for="monster of monsterData.monsters"
-                :class="canIdle(monster) ? `bg-[#6b2727]` : `bg-[#1a7c43]`"
+                :class="
+                  canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`
+                "
               >
                 <td class="px-4 py-2">{{ monster.name }}</td>
                 <td class="hidden px-4 py-2 md:table-cell">
@@ -133,7 +135,7 @@
                   {{ monster.maxHit }}
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
-                  ({{ getReducedMaxHit(monster) }})
+                  ({{ getReducedMaxHit(getMonster(monster)) }})
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
                   {{ getDRNeeded(monster) }}
@@ -142,7 +144,7 @@
             </tbody>
           </table>
         </div>
-        <div class="p-4" v-if="activeTab === 'dungeons'">
+        <div class="p-4" v-if="data.activeTab === 'dungeons'">
           <h2 class="text-xl font-semibold mb-4">Dungeons</h2>
           <select
             id="dungeon"
@@ -178,30 +180,30 @@
               <tr
                 v-for="monster of dungeonChoiceMonsters"
                 :class="
-                  canIdle(getMonster(monster)) ? `bg-[#6b2727]` : `bg-[#1a7c43]`
+                  canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`
                 "
               >
-                <td class="px-4 py-2">{{ getMonster(monster).name }}</td>
+                <td class="px-4 py-2">{{ monster.name }}</td>
                 <td class="hidden px-4 py-2 md:table-cell">
-                  {{ getMonster(monster).attackStyle }}
+                  {{ monster.attackStyle }}
                 </td>
                 <td
                   class="hidden px-4 py-2 text-right tabular-nums md:table-cell"
                 >
-                  {{ getMonster(monster).maxHit }}
+                  {{ monster.maxHit }}
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
                   ({{ getReducedMaxHit(getMonster(monster)) }})
                 </td>
                 <td class="px-4 py-2">
-                  {{ getDRNeeded(getMonster(monster)) }}
+                  {{ getDRNeeded(monster) }}
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="p-4" v-if="activeTab === 'slayer'">
-          <h2 class="text-xl font-semibold mb-4">Slayer</h2>
+        <div class="p-4" v-if="data.activeTab === 'slayer'">
+          <h2 class="text-xl font-semibold mb-4">Slayer</h2> {{canIdleSlayerTier}}
           <select
             id="slayer"
             class="text-white px-4 py-2 rounded bg-[#474747]"
@@ -236,23 +238,23 @@
               <tr
                 v-for="monster of slayerTierMonsters"
                 :class="
-                  canIdle(getMonster(monster)) ? `bg-[#6b2727]` : `bg-[#1a7c43]`
+                  canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`
                 "
               >
-                <td class="px-4 py-2">{{ getMonster(monster).name }}</td>
+                <td class="px-4 py-2">{{ monster.name }}</td>
                 <td class="hidden px-4 py-2 md:table-cell">
-                  {{ getMonster(monster).attackStyle }}
+                  {{ monster.attackStyle }}
                 </td>
                 <td
                   class="hidden px-4 py-2 text-right tabular-nums md:table-cell"
                 >
-                  {{ getMonster(monster).maxHit }}
+                  {{ monster.maxHit }}
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
                   ({{ getReducedMaxHit(getMonster(monster)) }})
                 </td>
                 <td class="px-4 py-2">
-                  {{ getDRNeeded(getMonster(monster)) }}
+                  {{ getDRNeeded(monster) }}
                 </td>
               </tr>
             </tbody>
@@ -275,7 +277,7 @@ import {
 import { Monster, monsterData } from "./data";
 
 export default defineComponent({
-  name: "App",
+  name: "Melvor Idle Calculator",
   components: {},
   setup() {
     onMounted(() => {
@@ -298,6 +300,10 @@ export default defineComponent({
       if (localStorage.dungeonChoice) {
         data.dungeonChoice = localStorage.dungeonChoice;
       }
+
+      if (localStorage.activeTab) {
+        data.activeTab = localStorage.activeTab;
+      }
     });
 
     const data = reactive({
@@ -310,6 +316,7 @@ export default defineComponent({
       wastefulRing: "No",
       guardianAmulet: "No",
       dungeonChoice: "Chicken Coop",
+      activeTab: 'monsters'
     });
 
     const dungeonChoiceMonsters = computed(
@@ -340,8 +347,6 @@ export default defineComponent({
       () => treshholds[data.autoEatLevel - 1] * data.totalHealth
     );
 
-    const activeTab = ref("dungeons");
-
     function getMultiplier(monsterAttackStyle: Monster["attackStyle"]) {
       const multipliers: any = {
         melee: {
@@ -370,19 +375,33 @@ export default defineComponent({
       return getMultiplier(monsterAttackStyle) * data.currentDR;
     }
 
-    function getReducedMaxHit({ maxHit, attackStyle }: Monster) {
+    function getReducedMaxHit({ maxHit, attackStyle, name }: Monster) {
       return Math.floor(maxHit * (1 - getNettoDR(attackStyle) / 100));
     }
 
-    function canIdle(monster: Monster) {
-      return getReducedMaxHit(monster) >= autoEatTreshhold.value;
+    function canIdle(monster: Monster | string) {
+      if (typeof monster === 'string') {
+        monster = getMonster(monster);
+      }
+
+      return getReducedMaxHit(monster) < autoEatTreshhold.value;
     }
 
-    /**
-     * max hit (100) * i
-     * 100 * 0.8
-     */
-    function getDRNeeded(monster: Monster) {
+    const canIdleSlayerTier = computed(() => {
+      if (slayerTierMonsters.value) {
+        return slayerTierMonsters.value.every(monster => {
+          return canIdle(monster);
+        });
+      }
+
+      return false;
+    });
+
+    function getDRNeeded(monster: Monster | string) {
+      if (typeof monster === 'string') {
+        monster = getMonster(monster);
+      }
+
       for (let i = 0; i < 100; i++) {
         if (
           autoEatTreshhold.value > Math.floor(monster.maxHit * (1 - i / 100))
@@ -402,12 +421,14 @@ export default defineComponent({
         autoEatLevel,
         combatStyle,
         dungeonChoice,
+        activeTab
       }) => {
         localStorage.totalHealth = totalHealth;
         localStorage.currentDR = currentDR;
         localStorage.autoEatLevel = autoEatLevel;
         localStorage.combatStyle = combatStyle;
         localStorage.dungeonChoice = dungeonChoice;
+        localStorage.activeTab = activeTab;
       }
     );
 
@@ -416,12 +437,12 @@ export default defineComponent({
       canIdle,
       monsterData,
       autoEatTreshhold,
-      activeTab,
       getDRNeeded,
       getReducedMaxHit,
       dungeonChoiceMonsters,
       slayerTierMonsters,
       getMonster,
+      canIdleSlayerTier
     };
   },
 });
