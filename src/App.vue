@@ -28,6 +28,7 @@
                 type="number"
                 step="1"
                 min="0"
+                max="100"
                 v-model="data.currentDR"
               />
             </label>
@@ -173,9 +174,13 @@
                 v-for="monster of monsterData.monsters"
                 :class="canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`"
               >
-              <td class="px-4 hidden md:table-cell">
-                <img class="h-10 w-10" :src="`https://cdn.melvor.net/core/v018/assets/media/monsters/${monster.image}`" :alt="monster.name">
-              </td>
+                <td class="px-4 hidden md:table-cell">
+                  <img
+                    class="h-10 w-10"
+                    :src="`https://cdn.melvor.net/core/v018/assets/media/monsters/${monster.image}`"
+                    :alt="monster.name"
+                  />
+                </td>
                 <td class="px-4 py-2">
                   <a
                     class="hover:underline"
@@ -436,7 +441,11 @@ export default defineComponent({
     onMounted(() => {
       Object.keys(data).forEach((attr) => {
         if (localStorage[attr]) {
-          data[attr] = localStorage[attr];
+          if (["true", "false"].includes(localStorage[attr])) {
+            data[attr] = localStorage[attr] === 'true';
+          } else {
+            data[attr] = localStorage[attr];
+          }
         }
       });
     });
@@ -543,15 +552,16 @@ export default defineComponent({
     });
 
     function getDRNeeded(monster: Monster) {
-      for (let i = 0; i < 100; i++) {
-        if (
-          autoEatTreshold.value > Math.floor(monster.maxHit * (1 - i / 100))
-        ) {
-          return Math.floor(i / getMultiplier(monster.attackStyle));
-        }
-      }
-
-      return 0;
+      return Math.max(
+        0,
+        Math.ceil(
+          Math.ceil(
+            100 -
+              (data.totalHealth / monster.maxHit) *
+                (100 * tresholds[data.autoEatLevel - 1])
+          ) / getMultiplier(monster.attackStyle)
+        )
+      );
     }
 
     watch(data, (data) => {
