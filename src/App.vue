@@ -514,13 +514,13 @@ export default defineComponent({
     }
 
     function getNettoDR(monsterAttackStyle: Monster["attackStyle"]) {
-      return (
+      return Math.floor((
         getMultiplier(monsterAttackStyle) *
         (Number(data.currentDR) + (data.guardianAmulet === "Yes" ? 5 : 0))
-      );
+      ));
     }
 
-    function getReducedMaxHit({ maxHit, attackStyle }: Monster) {
+    function getReducedMaxHit({ name, maxHit, attackStyle }: Monster) {
       return Math.floor(maxHit * (1 - getNettoDR(attackStyle) / 100));
     }
 
