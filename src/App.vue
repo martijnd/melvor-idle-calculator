@@ -76,7 +76,7 @@
               </select>
             </label>
             <label for="combatStyle" class="w-1/2">
-              <div class="mb-1 font-semibold">Guardian amulet</div>
+              <div class="mb-1 font-semibold">Guardian am.</div>
               <select
                 id="guardianAmulet"
                 class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
