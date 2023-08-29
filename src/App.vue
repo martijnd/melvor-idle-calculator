@@ -73,20 +73,20 @@
       <div class="rounded bg-dark-light">
         <div id="tabs" class="flex">
           <button :class="`tab border border-r-0 px-4 py-2 rounded-tl flex-1 hover:bg-dark-lighter ${data.activeTab === 'monsters'
-              ? 'font-bold bg-dark'
-              : 'bg-dark-light'
+            ? 'font-bold bg-dark'
+            : 'bg-dark-light'
             }`" @click="data.activeTab = 'monsters'">
             Monsters
           </button>
           <button :class="`tab border px-4 py-2 border-r-0 flex-1 hover:bg-dark-lighter ${data.activeTab === 'dungeons'
-              ? 'font-bold bg-dark'
-              : 'bg-dark-light'
+            ? 'font-bold bg-dark'
+            : 'bg-dark-light'
             }`" @click="data.activeTab = 'dungeons'">
             Dungeons
           </button>
           <button :class="`tab border px-4 py-2 rounded-tr flex-1 hover:bg-dark-lighter ${data.activeTab === 'slayer'
-              ? 'font-bold bg-dark'
-              : 'bg-dark-light'
+            ? 'font-bold bg-dark'
+            : 'bg-dark-light'
             }`" @click="data.activeTab = 'slayer'">
             Slayer
           </button>
@@ -268,7 +268,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineComponent, onMounted, reactive, watch } from "vue";
+import { computed, onMounted, reactive, watch } from "vue";
 import { Monster, monsterData } from "./data";
 
 onMounted(() => {
@@ -280,6 +280,7 @@ onMounted(() => {
 });
 
 const data = reactive<{ [key: string]: any }>({
+  mode: 'Normal',
   slayerTier: "Easy",
   totalHealth: 600,
   currentDR: 20,
