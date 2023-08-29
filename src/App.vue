@@ -113,20 +113,20 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of monsterData.monsters" :class="canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`">
+              <tr v-for="monster of monsters" :class="canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`">
                 <td class="hidden px-4 md:table-cell">
-                  <img class="w-10 h-10" :src="`https://cdn.melvor.net/core/v018/assets/media/monsters/${monster.image}`"
-                    :alt="monster.name" />
+                  <!-- <img class="w-10 h-10" :src="`https://cdn.melvor.net/core/v018/assets/media/monsters/${monster.image}`"
+                    :alt="monster.name" /> -->
                 </td>
                 <td class="px-4 py-2">
                   <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">{{
                     monster.name }}</a>
                 </td>
                 <td class="hidden px-4 py-2 md:table-cell">
-                  {{ monster.attackStyle }}
+                  {{ monster.attackStyle ?? 'N/A' }}
                 </td>
                 <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">
-                  {{ monster.maxHit }}
+                  {{ calculateMonsterMaxAttack(monster) }}
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
                   ({{ getReducedMaxHit(monster) }})
@@ -155,7 +155,7 @@
               </svg>
             </h2>
             <select id="dungeon" class="text-white px-4 py-2 rounded bg-[#474747]" v-model="data.dungeonChoice">
-              <option v-for="dungeon of monsterData.dungeons" :value="dungeon.name">
+              <option v-for="dungeon of dungeons" :value="dungeon.name">
                 {{ dungeon.name }}
               </option>
             </select>
@@ -215,7 +215,7 @@
               </svg>
             </h2>
             <select id="slayer" class="text-white px-4 py-2 rounded bg-[#474747]" v-model="data.slayerTier">
-              <option v-for="tier of monsterData.slayerTiers" :value="tier.name">
+              <option v-for="tier of slayerTiers" :value="tier.name">
                 {{ tier.name }}
               </option>
             </select>
@@ -269,17 +269,33 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, reactive, watch } from "vue";
-import { Monster, monsterData } from "./data";
+import { Monster, dungeons, monsters, slayerTiers } from "./data";
 
 onMounted(() => {
-  Object.keys(data).forEach((attr) => {
-    if (localStorage[attr]) {
-      data[attr] = localStorage[attr];
-    }
-  });
+  if (localStorage['data']) {
+    data = JSON.parse(localStorage["data"]);
+  }
 });
 
-const data = reactive<{ [key: string]: any }>({
+interface Data {
+  mode: string;
+  slayerTier: 'Easy' | 'Normal' | 'Hard' | 'Elite' | 'Master' | 'Legendary' | 'Mythical';
+  totalHealth: number;
+  currentDR: number;
+  autoEatLevel: 1 | 2 | 3;
+  combatStyle: 'Melee' | 'Ranged' | 'Magic';
+  wastefulRing: 'Yes' | 'No';
+  guardianAmulet: 'Yes' | 'No';
+  yakSynergy: "None" | "Minotaur" | "Centaur" | "Witch" | "Cyclops";
+  stunDamage: 'Yes' | 'No';
+  slayerAreaNegation: number;
+  dungeonChoice: typeof dungeons[number]['name'];
+  activeTab: 'monsters' | 'dungeons' | 'slayer';
+  inputsVisible: boolean;
+
+}
+
+let data = reactive<Data>({
   mode: 'Normal',
   slayerTier: "Easy",
   totalHealth: 600,
@@ -288,28 +304,31 @@ const data = reactive<{ [key: string]: any }>({
   combatStyle: "Melee",
   wastefulRing: "No",
   guardianAmulet: "No",
+  yakSynergy: "None",
+  stunDamage: "No",
+  slayerAreaNegation: 0,
   dungeonChoice: "Chicken Coop",
   activeTab: "monsters",
   inputsVisible: true,
 });
 
 const dungeonChoiceMonsters = computed(() =>
-  monsterData.dungeons
+  dungeons
     .find((dungeon) => dungeon.name === data.dungeonChoice)
     ?.monsters.map(getMonster)
 );
 
 const slayerTierMonsters = computed(() =>
-  monsterData.slayerTiers
+  slayerTiers
     .find((dungeon) => dungeon.name === data.slayerTier)
     ?.monsters.map(getMonster)
 );
 
 function getMonster(monsterString: string) {
   return (
-    monsterData.monsters.find(
+    monsters.find(
       (monster) => monster.name === monsterString
-    ) ?? monsterData.monsters[0]
+    ) ?? monsters[0]
   );
 }
 
@@ -324,26 +343,27 @@ const autoEatTreshold = computed(() => {
 });
 
 function getMultiplier(monsterAttackStyle: Monster["attackStyle"]) {
-  const multipliers: any = {
-    melee: {
-      ranged: 1.25,
-      magic: 0.5,
-      melee: 1,
+  if (monsterAttackStyle === null) return 1;
+  const multipliers = {
+    Melee: {
+      Ranged: 1.25,
+      Magic: 0.5,
+      Melee: 1,
     },
-    ranged: {
-      melee: 0.95,
-      magic: 1.25,
-      ranged: 1,
+    Ranged: {
+      Melee: 0.95,
+      Magic: 1.25,
+      Ranged: 1,
     },
-    magic: {
-      melee: 1.25,
-      ranged: 0.85,
-      magic: 1,
+    Magic: {
+      Melee: 1.25,
+      Ranged: 0.85,
+      Magic: 1,
     },
-  };
+  } as const;
 
-  return multipliers[data.combatStyle.toLowerCase()][
-    monsterAttackStyle.toLowerCase()
+  return multipliers[data.combatStyle][
+    monsterAttackStyle
   ];
 }
 
@@ -354,8 +374,9 @@ function getNettoDR(monsterAttackStyle: Monster["attackStyle"]) {
   );
 }
 
-function getReducedMaxHit({ maxHit, attackStyle }: Monster) {
-  return Math.floor(maxHit * (1 - getNettoDR(attackStyle) / 100));
+function getReducedMaxHit(monster: Monster) {
+  const maxHit = calculateMonsterMaxAttack(monster)
+  return Math.floor(maxHit * (1 - getNettoDR(monster.attackStyle) / 100));
 }
 
 function canIdle(monster: Monster | string) {
@@ -388,15 +409,88 @@ function getDRNeeded(monster: Monster) {
     Math.ceil(
       Math.ceil(
         100 -
-        (data.totalHealth / monster.maxHit) *
+        (data.totalHealth / calculateMonsterMaxAttack(monster)) *
         (100 * tresholds[data.autoEatLevel - 1])
       ) / getMultiplier(monster.attackStyle)
     )
   );
 }
+const numberMultiplier = computed(() => {
+  if (data.mode === "Adventure") {
+    return 100;
+  }
+  return 10;
+});
+
+function calculateNormalAttack(monster: Monster) {
+  let maximumNormalAttack = 0;
+  if (monster.attackStyle === "Melee") {
+    let effectiveAttackLevel = monster.attackLevel + 9;
+    maximumNormalAttack = Math.floor(numberMultiplier.value * (1.3 + effectiveAttackLevel / 10 + monster.attackBonus / 80 + effectiveAttackLevel * monster.attackBonus / 640));
+  }
+  else if (monster.attackStyle === "Ranged") {
+    let effectiveAttackLevel = monster.attackLevel + 9;
+    maximumNormalAttack = Math.floor(numberMultiplier.value * (1.3 + effectiveAttackLevel / 10 + monster.attackBonus / 80 + effectiveAttackLevel * monster.attackBonus / 640));
+  }
+  else if (monster.attackStyle === "Magic") {
+    maximumNormalAttack = Math.floor(numberMultiplier.value * monster.spellMaxHit * (1 + monster.attackBonus / 100) * (1 + (monster.attackLevel + 1) / 200));
+  }
+
+  let multiplier = 1;
+  if (data.stunDamage === "Yes") {
+    if (monster.canStun) {
+      multiplier = 1.3;
+    }
+    else if (monster.canSleep) {
+      multiplier = 1.2
+      if (monster.areas[0] === "Foggy Lake")
+        multiplier += 1.5 - Math.min(150, data.slayerAreaNegation) / 100
+    }
+  }
+
+  return Math.floor(maximumNormalAttack * multiplier);
+}
+
+function calculateSpecialAttack(specialAttack: number, canStun: boolean, canSleep: boolean, areas: string[]) {
+  let baseDamage = specialAttack * numberMultiplier.value;
+
+  let multiplier = 1;
+  if (data.stunDamage == "Yes") {
+    if (canStun) {
+      multiplier = 1.3;
+    }
+    else if (canSleep) {
+      multiplier = 1.2;
+      if (areas.includes("Foggy Lake"))
+        multiplier += 1.5 - Math.min(150, data.slayerAreaNegation) / 100
+    }
+  }
+
+  return Math.floor(baseDamage * multiplier);
+}
+
+function calculateMonsterMaxAttack(monster: Monster) {
+
+  let maxNormalAttack = calculateNormalAttack(monster);
+  let maxSpecialAttack = 0;
+
+  monster.specialAttack.forEach(specialAttack => {
+    let currentSpecialAttack = 0;
+    if (specialAttack.name === "Savage Spike") {
+      currentSpecialAttack = calculateSpecialAttack((specialAttack.maxHit + 18), monster.canStun, monster.canSleep, monster.areas);
+    } else {
+      currentSpecialAttack = calculateSpecialAttack(specialAttack.maxHit, monster.canStun, monster.canSleep, monster.areas);
+    }
+    if (currentSpecialAttack > maxSpecialAttack) {
+      maxSpecialAttack = currentSpecialAttack;
+    }
+  });
+
+  return Math.max(maxNormalAttack, maxSpecialAttack);
+}
 
 watch(data, (data) => {
-  Object.keys(data).forEach((attr) => (localStorage[attr] = data[attr]));
+  localStorage["data"] = JSON.stringify(data);
 });
 
 
