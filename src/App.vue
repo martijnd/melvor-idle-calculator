@@ -278,12 +278,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, unref, watch } from "vue";
+import { computed, onMounted, reactive, watch } from "vue";
 import { Monster, dungeons, monsters, slayerTiers } from "./data";
 
 onMounted(() => {
   if (localStorage["data"]) {
-    data = JSON.parse(localStorage["data"]);
+    Object.assign(data, JSON.parse(localStorage["data"]));
   }
 });
 
@@ -311,7 +311,7 @@ interface Data {
   inputsVisible: boolean;
 }
 
-let data = reactive<Data>({
+const data = reactive<Data>({
   mode: "Normal",
   slayerTier: "Easy",
   totalHealth: 600,
@@ -328,16 +328,18 @@ let data = reactive<Data>({
   inputsVisible: true,
 });
 
-const dungeonChoiceMonsters = computed(() =>
-  dungeons
-    .find((dungeon) => dungeon.name === data.dungeonChoice)
-    ?.monsters.map(getMonster)
+const dungeonChoiceMonsters = computed(
+  () =>
+    dungeons
+      .find((dungeon) => dungeon.name === data.dungeonChoice)
+      ?.monsters.map(getMonster)
 );
 
-const slayerTierMonsters = computed(() =>
-  slayerTiers
-    .find((dungeon) => dungeon.name === data.slayerTier)
-    ?.monsters.map(getMonster)
+const slayerTierMonsters = computed(
+  () =>
+    slayerTiers
+      .find((dungeon) => dungeon.name === data.slayerTier)
+      ?.monsters.map(getMonster)
 );
 
 function getMonster(monsterString: string) {
@@ -886,10 +888,8 @@ function calculateReducedMaxHit(
   }
   return reducedHit;
 }
-console.log(data)
 watch(data, (data) => {
   localStorage["data"] = JSON.stringify(data);
-  console.log({ data })
 });
 </script>
 
