@@ -98,7 +98,6 @@
           <table class="w-full">
             <thead>
               <tr>
-                <th class="hidden px-4 py-2 text-left md:table-cell"></th>
                 <th class="px-4 py-2 text-left">Name</th>
                 <th class="hidden px-4 py-2 text-left md:table-cell">
                   Attack style
@@ -113,14 +112,11 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of monsters" :class="canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`">
-                <td class="hidden px-4 md:table-cell">
-                  <!-- <img class="w-10 h-10" :src="`https://cdn.melvor.net/core/v018/assets/media/monsters/${monster.image}`"
-                    :alt="monster.name" /> -->
-                </td>
+              <tr v-for="monster of monsters"
+                :class="calculateIdleability(getMaxHit(getAttacks(monster, false))) ? `bg-[#1a7c43]` : `bg-[#6b2727]`">
                 <td class="px-4 py-2">
-                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">{{
-                    monster.name }}</a>
+                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">
+                    {{ monster.name }}</a>
                 </td>
                 <td class="hidden px-4 py-2 md:table-cell">
                   {{ monster.attackStyle ?? 'N/A' }}
@@ -129,7 +125,7 @@
                   {{ calculateMonsterMaxAttack(monster) }}
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
-                  ({{ getReducedMaxHit(monster) }})
+                  ({{ getReducedMaxHit(getAttacks(monster, false)) }})
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
                   {{ getDRNeeded(monster) }}
@@ -177,7 +173,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of dungeonChoiceMonsters" :class="canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`">
+              <tr v-for="monster of dungeonChoiceMonsters"
+                :class="calculateIdleability(getMaxHit(getAttacks(monster, false))) ? `bg-[#1a7c43]` : `bg-[#6b2727]`">
                 <td class="px-4 py-2">
                   <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">{{
                     monster.name }}</a>
@@ -186,13 +183,14 @@
                   {{ monster.attackStyle }}
                 </td>
                 <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">
-                  {{ monster.maxHit }}
+                  {{ getMaxHit(getAttacks(monster, false)) }}
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
-                  ({{ getReducedMaxHit(monster) }})
+                  ({{ getReducedMaxHit(getAttacks(monster, false)) }})
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
-                  {{ getDRNeeded(monster) }}
+                  {{ calculateMinimumDR(monster.attackStyle, getMaxHit(getAttacks(monster, false)), monster.intimidation)
+                  }}
                 </td>
               </tr>
             </tbody>
@@ -237,7 +235,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of slayerTierMonsters" :class="canIdle(monster) ? `bg-[#1a7c43]` : `bg-[#6b2727]`">
+              <tr v-for="monster of slayerTierMonsters"
+                :class="calculateIdleability(getMaxHit(getAttacks(monster, true))) ? `bg-[#1a7c43]` : `bg-[#6b2727]`">
                 <td class="px-4 py-2">
                   <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">{{
                     monster.name }}</a>
@@ -246,10 +245,10 @@
                   {{ monster.attackStyle }}
                 </td>
                 <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">
-                  {{ monster.maxHit }}
+                  {{ getMaxHit(getAttacks(monster, true)) }}
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
-                  ({{ getReducedMaxHit(monster) }})
+                  ({{ getReducedMaxHit(getAttacks(monster, true)) }})
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
                   {{ getDRNeeded(monster) }}
@@ -374,22 +373,9 @@ function getNettoDR(monsterAttackStyle: Monster["attackStyle"]) {
   );
 }
 
-function getReducedMaxHit(monster: Monster) {
-  const maxHit = calculateMonsterMaxAttack(monster)
-  return Math.floor(maxHit * (1 - getNettoDR(monster.attackStyle) / 100));
-}
-
-function canIdle(monster: Monster | string) {
-  if (typeof monster === "string") {
-    monster = getMonster(monster);
-  }
-
-  return getReducedMaxHit(monster) < autoEatTreshold.value;
-}
-
 const canIdleDungeon = computed(() => {
   if (dungeonChoiceMonsters.value) {
-    return dungeonChoiceMonsters.value.every(canIdle);
+    return dungeonChoiceMonsters.value.every(monster => calculateIdleability(getMaxHit(getAttacks(monster, false))));
   }
 
   return false;
@@ -397,7 +383,7 @@ const canIdleDungeon = computed(() => {
 
 const canIdleSlayerTier = computed(() => {
   if (slayerTierMonsters.value) {
-    return slayerTierMonsters.value.every(canIdle);
+    return slayerTierMonsters.value.every(monster => calculateIdleability(getMaxHit(getAttacks(monster, false))));
   }
 
   return false;
@@ -415,6 +401,7 @@ function getDRNeeded(monster: Monster) {
     )
   );
 }
+
 const numberMultiplier = computed(() => {
   if (data.mode === "Adventure") {
     return 100;
@@ -451,11 +438,11 @@ function calculateNormalAttack(monster: Monster) {
   return Math.floor(maximumNormalAttack * multiplier);
 }
 
-function calculateSpecialAttack(specialAttack: number, canStun: boolean, canSleep: boolean, areas: string[]) {
+function calculateSpecialAttackDamage(specialAttack: number, canStun: boolean, canSleep: boolean, areas: ReadonlyArray<string>) {
   let baseDamage = specialAttack * numberMultiplier.value;
 
   let multiplier = 1;
-  if (data.stunDamage == "Yes") {
+  if (data.stunDamage === "Yes") {
     if (canStun) {
       multiplier = 1.3;
     }
@@ -470,16 +457,15 @@ function calculateSpecialAttack(specialAttack: number, canStun: boolean, canSlee
 }
 
 function calculateMonsterMaxAttack(monster: Monster) {
-
   let maxNormalAttack = calculateNormalAttack(monster);
   let maxSpecialAttack = 0;
 
   monster.specialAttack.forEach(specialAttack => {
     let currentSpecialAttack = 0;
     if (specialAttack.name === "Savage Spike") {
-      currentSpecialAttack = calculateSpecialAttack((specialAttack.maxHit + 18), monster.canStun, monster.canSleep, monster.areas);
-    } else {
-      currentSpecialAttack = calculateSpecialAttack(specialAttack.maxHit, monster.canStun, monster.canSleep, monster.areas);
+      currentSpecialAttack = calculateSpecialAttackDamage((specialAttack.maxHit + 18), monster.canStun, monster.canSleep, monster.areas);
+    } else if ('maxHit' in specialAttack) {
+      currentSpecialAttack = calculateSpecialAttackDamage(specialAttack.maxHit, monster.canStun, monster.canSleep, monster.areas);
     }
     if (currentSpecialAttack > maxSpecialAttack) {
       maxSpecialAttack = currentSpecialAttack;
@@ -488,6 +474,253 @@ function calculateMonsterMaxAttack(monster: Monster) {
 
   return Math.max(maxNormalAttack, maxSpecialAttack);
 }
+
+function getAttacks(monster: Monster, isSlayer: boolean): CalculatedAttack[] {
+  const attacks: CalculatedAttack[] = [];
+
+  if (monster.usesNormalHit) {
+    attacks.push(getNormalAttack(monster, isSlayer));
+  }
+
+  if (monster.specialAttack?.length) {
+    monster.specialAttack.forEach((specialAttack) => {
+      attacks.push(getSpecialAttack(specialAttack, monster, isSlayer));
+    });
+  }
+
+  return attacks;
+}
+
+function getIsIdleable(maxHit: number) {
+  return maxHit <= (data.totalHealth * autoEatThreshold.value);
+}
+
+function getMinimumDR(attacks: ReadonlyArray<CalculatedAttack>) {
+  return attacks.reduce((previousValue, currentValue) => {
+    return Math.max(previousValue, currentValue.minimumDR);
+  }, 0);
+}
+
+function getMinimumHP(attacks: ReadonlyArray<CalculatedAttack>) {
+  return attacks.reduce((previousValue, currentValue) => {
+    return Math.max(previousValue, currentValue.minimumHP);
+  }, 0);
+}
+
+function getMaxHit(attacks: ReadonlyArray<CalculatedAttack>) {
+  return attacks.reduce((previousValue, currentValue) => {
+    return Math.max(previousValue, currentValue.maxHit);
+  }, 0);
+}
+
+function getReducedMaxHit(attacks: ReadonlyArray<CalculatedAttack>) {
+  return attacks.reduce((previousValue, currentValue) => {
+    return Math.max(previousValue, currentValue.reducedMaxHit);
+  }, 0);
+}
+
+type Attack = {
+  name: string;
+} & ({
+  fixedAttack: true;
+  maxHit: number;
+} | {
+  fixedAttack: false;
+  maxHitMultiplier: number;
+})
+
+type CalculatedAttack = {
+  minimumDR: number;
+  minimumHP: number;
+  isIdleable: boolean;
+  maxHit: number;
+  reducedMaxHit: number;
+} & Attack;
+
+function getNormalAttack(monster: Monster, isSlayer: boolean): CalculatedAttack {
+  let attack = {
+    name: "Normal Attack",
+    minimumDR: 0,
+    minimumHP: 0,
+    isIdleable: true,
+    maxHit: 0,
+    reducedMaxHit: 0,
+    fixedAttack: true as const,
+  };
+
+  const maxHit = calculateNormalAttack(monster);
+  const reducedMaxHit = calculateReducedMaxHit(monster.attackStyle, attack.maxHit, isSlayer, monster.intimidation);
+  const minimumDR = calculateMinimumDR(monster.attackStyle, attack.maxHit, monster.intimidation);
+  const minimumHP = calculateMinimumHP(monster.attackStyle, attack.maxHit, isSlayer, monster.intimidation);
+  const isIdleable = getIsIdleable(attack.reducedMaxHit);
+
+  return {
+    name: "Normal Attack",
+    minimumDR,
+    minimumHP,
+    isIdleable,
+    maxHit,
+    reducedMaxHit,
+    fixedAttack: attack.fixedAttack,
+  }
+}
+
+function getSpecialAttack(attack: Attack, monster: Monster, isSlayer: boolean): CalculatedAttack {
+  let normalHitAttacks = [
+    "Volley",
+    "Burning Trail",
+    "Infernal Volley",
+    "Frostburn",
+    "Venom",
+    "Rapid Fire",
+    "Elemental Impact (Stun)",
+    "Elemental Impact (Freeze)",
+    "Elemental Impact (Burn)",
+    "Elemental Impact (Frostburn)",
+    "Ram",
+    "Fleetness",
+  ];
+  let maxHit = 0;
+  if (normalHitAttacks.includes(attack.name)) {
+    maxHit = calculateNormalAttack(monster);
+  }
+  else if (attack.name === "Lesser Sandstorm") {
+    let normalAttack = calculateNormalAttack(monster);
+    let adjustedAttack = normalAttack + ((120 * numberMultiplier.value) * .05);
+    maxHit = Math.ceil(adjustedAttack);
+  }
+  else if (attack.name === "Greater Sandstorm") {
+    let adjustedAttack = ((185 * numberMultiplier.value) * .15);
+    maxHit = Math.ceil(adjustedAttack);
+  }
+  else if (attack.name === "Confusion") {
+    maxHit = 0;
+  }
+  else if (attack.name === "Savage Spike") {
+    maxHit = calculateSpecialAttackDamage((maxHit + 18), monster.canStun, monster.canSleep, monster.areas); // Might need to change this if TotH enemies use Savage Spike
+  }
+  else if (attack.name === "Horn Shots") {
+    maxHit = Math.floor(calculateNormalAttack(monster) * .6);
+  }
+  else { // Standard special attack
+    if ('fixedAttack' in attack) {
+      if (attack.fixedAttack) {
+        maxHit = calculateSpecialAttackDamage(maxHit, monster.canStun, monster.canSleep, monster.areas);  // Damage is fixed 
+      }
+      else {
+        maxHit = Math.floor(calculateNormalAttack(monster) * attack.maxHitMultiplier / 100) // Damage is based off the base damage of the monster
+      }
+    }
+  }
+
+  const reducedMaxHit = calculateReducedMaxHit(monster.attackStyle, maxHit, isSlayer, monster.intimidation);
+  const minimumDR = calculateMinimumDR(monster.attackStyle, maxHit, monster.intimidation);
+  const minimumHP = calculateMinimumHP(monster.attackStyle, maxHit, isSlayer, monster.intimidation);
+  const isIdleable = calculateIdleability(reducedMaxHit);
+
+  if (attack.fixedAttack) {
+    return {
+      name: attack.name,
+      minimumDR,
+      minimumHP,
+      isIdleable,
+      maxHit,
+      reducedMaxHit,
+      fixedAttack: attack.fixedAttack,
+    }
+  }
+  return {
+    name: attack.name,
+    minimumDR,
+    minimumHP,
+    isIdleable,
+    maxHit,
+    reducedMaxHit,
+    fixedAttack: attack.fixedAttack,
+    maxHitMultiplier: attack.maxHitMultiplier,
+  }
+}
+
+function calculateIdleability(maxHit: number) {
+  return maxHit <= (data.totalHealth * autoEatThreshold.value);
+}
+
+type AttackStyle = "Melee" | "Ranged" | "Magic";
+
+function calculateYakDRModifier(monsterAttackStyle: AttackStyle, isSlayer: boolean) {
+  if ((data.yakSynergy === "Minotaur" && monsterAttackStyle === "Ranged")
+    || (data.yakSynergy === "Centaur" && monsterAttackStyle === "Magic")
+    || (data.yakSynergy === "Witch" && monsterAttackStyle === "Melee")) {
+    return 2;
+  }
+  else if (data.yakSynergy === "Cyclops" && isSlayer) {
+    return 3;
+  }
+
+  return 0;
+}
+
+function getCombatStyle(style: AttackStyle) {
+  switch (style) {
+    case "Melee":
+      return 0;
+    case "Ranged":
+      return 1;
+    case "Magic":
+      return 2;
+  }
+}
+
+function calculateMinimumDR(attackStyle: AttackStyle, maxHit: number, intimidation: number) {
+  return Math.max(0, Math.min(100, Math.ceil(Math.ceil(100 - data.totalHealth / maxHit * (100 * autoEatThreshold.value)) / combatTriangle.value[getCombatStyle(data.combatStyle)][getCombatStyle(attackStyle)])) + intimidation);
+}
+
+function calculateMinimumHP(attackStyle: AttackStyle, maxHit: number, isSlayer: boolean, intimidation: number) {
+  let intimidatedDR = data.currentDR - intimidation;
+  let yakAdjustedDr = intimidatedDR + calculateYakDRModifier(attackStyle, isSlayer);
+  return Math.max(100, Math.ceil((maxHit - Math.floor(maxHit * (Math.floor(yakAdjustedDr * combatTriangle.value[getCombatStyle(data.combatStyle)][getCombatStyle(attackStyle)])) / 100)) / autoEatThreshold.value / 10) * 10);
+}
+
+const autoEatThreshold = computed(() => {
+  let aethreshold = 0;
+  switch (data.autoEatLevel) {
+    case 1:
+      aethreshold = 0.2;
+      break;
+    case 2:
+      aethreshold = 0.3;
+      break;
+    case 3:
+      aethreshold = 0.4;
+      break;
+  }
+
+  if (data.wastefulRing === "Yes") {
+    aethreshold = aethreshold + 0.05;
+  }
+
+  return aethreshold;
+});
+
+const combatTriangle = computed(() => {
+  if (data.mode === "Normal") {
+    return [[1, 1.25, 0.75], [0.95, 1, 1.25], [1.25, 0.85, 1]];
+  }
+  return [[1, 1.25, 0.5], [0.75, 1, 1.25], [1.25, 0.75, 1]];
+});
+
+function calculateReducedMaxHit(attackStyle: AttackStyle, maxHit: number, isSlayer: boolean, intimidation: number) {
+  const intimidatedDR = data.currentDR - intimidation;
+  const yakAdjustedDr = intimidatedDR + calculateYakDRModifier(attackStyle, isSlayer);
+  const combatAdjustedDr = Math.floor(yakAdjustedDr * combatTriangle.value[getCombatStyle(data.combatStyle)][getCombatStyle(attackStyle)]);
+  const attackReduction = maxHit * (Math.min(100, combatAdjustedDr) / 100);
+  let reducedHit = Math.floor(maxHit - attackReduction);
+  if (data.guardianAmulet === "Yes" && reducedHit <= data.totalHealth * .5 && reducedHit >= data.totalHealth * autoEatThreshold.value) {
+    reducedHit = Math.floor(maxHit - maxHit * (Math.floor((yakAdjustedDr + 5) * combatTriangle.value[getCombatStyle(data.combatStyle)][getCombatStyle(attackStyle)])) / 100);
+  }
+  return reducedHit;
+}
+
 
 watch(data, (data) => {
   localStorage["data"] = JSON.stringify(data);
