@@ -9,8 +9,8 @@
           <div class="flex space-x-4 md:w-1/2">
             <label for="totalHealth" class="w-1/2">
               <div class="mb-1 font-semibold">Total health</div>
-              <input id="totalHealth" class="w-full px-4 py-2 text-white rounded bg-dark-light" type="number" step="10"
-                min="0" v-model="data.totalHealth" />
+              <input id="totalHealth" class="w-full px-4 py-2 text-white rounded bg-dark-light" type="number"
+                :step="data.mode === 'Normal' ? 10 : 100" min="0" v-model="data.totalHealth" />
             </label>
             <label for="currentDR" class="w-1/2">
               <div class="mb-1 font-semibold">Current DR (%)</div>
@@ -130,7 +130,11 @@
                   ({{ getReducedMaxHit(getAttacks(monster, false)) }})
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
-                  {{ getDRNeeded(monster) }}
+                  {{ calculateMinimumDR(
+                    monster.attackStyle,
+                    getMaxHit(getAttacks(monster, false)),
+                    monster.intimidation
+                  ) }}
                 </td>
               </tr>
             </tbody>
@@ -262,7 +266,11 @@
                   ({{ getReducedMaxHit(getAttacks(monster, true)) }})
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
-                  {{ getDRNeeded(monster) }}
+                  {{ calculateMinimumDR(
+                    monster.attackStyle,
+                    getMaxHit(getAttacks(monster, false)),
+                    monster.intimidation
+                  ) }}
                 </td>
               </tr>
             </tbody>
@@ -321,7 +329,7 @@ const data = reactive<Data>({
   wastefulRing: "No",
   guardianAmulet: "No",
   yakSynergy: "None",
-  stunDamage: "No",
+  stunDamage: "Yes",
   slayerAreaNegation: 0,
   dungeonChoice: "Chicken Coop",
   activeTab: "monsters",
@@ -407,19 +415,6 @@ const canIdleSlayerTier = computed(() => {
 
   return false;
 });
-
-function getDRNeeded(monster: Monster) {
-  return Math.max(
-    0,
-    Math.ceil(
-      Math.ceil(
-        100 -
-        (data.totalHealth / calculateMonsterMaxAttack(monster)) *
-        (100 * tresholds[data.autoEatLevel - 1])
-      ) / getMultiplier(monster.attackStyle)
-    )
-  );
-}
 
 const numberMultiplier = computed(() => {
   if (data.mode === "Adventure") {
@@ -561,8 +556,8 @@ function getMaxHit(attacks: ReadonlyArray<CalculatedAttack>) {
 }
 
 function getReducedMaxHit(attacks: ReadonlyArray<CalculatedAttack>) {
-  return attacks.reduce((previousValue, currentValue) => {
-    return Math.max(previousValue, currentValue.reducedMaxHit);
+  return attacks.reduce((previousValue, attack) => {
+    return Math.max(previousValue, attack.reducedMaxHit);
   }, 0);
 }
 
@@ -591,35 +586,25 @@ function getNormalAttack(
   monster: Monster,
   isSlayer: boolean
 ): CalculatedAttack {
-  let attack = {
-    name: "Normal Attack",
-    minimumDR: 0,
-    minimumHP: 0,
-    isIdleable: true,
-    maxHit: 0,
-    reducedMaxHit: 0,
-    fixedAttack: true as const,
-  };
-
   const maxHit = calculateNormalAttack(monster);
   const reducedMaxHit = calculateReducedMaxHit(
     monster.attackStyle,
-    attack.maxHit,
+    maxHit,
     isSlayer,
     monster.intimidation
   );
   const minimumDR = calculateMinimumDR(
     monster.attackStyle,
-    attack.maxHit,
+    maxHit,
     monster.intimidation
   );
   const minimumHP = calculateMinimumHP(
     monster.attackStyle,
-    attack.maxHit,
+    maxHit,
     isSlayer,
     monster.intimidation
   );
-  const isIdleable = getIsIdleable(attack.reducedMaxHit);
+  const isIdleable = getIsIdleable(reducedMaxHit);
 
   return {
     name: "Normal Attack",
@@ -628,7 +613,7 @@ function getNormalAttack(
     isIdleable,
     maxHit,
     reducedMaxHit,
-    fixedAttack: attack.fixedAttack,
+    fixedAttack: true,
   };
 }
 
@@ -771,17 +756,16 @@ function calculateMinimumDR(
   maxHit: number,
   intimidation: number
 ) {
+  const combatMultiplier = combatTriangle.value[getCombatStyle(data.combatStyle)][getCombatStyle(attackStyle)];
   return Math.max(
     0,
     Math.min(
       100,
       Math.ceil(
         Math.ceil(
-          100 - (data.totalHealth / maxHit) * (100 * autoEatThreshold.value)
+          100 - data.totalHealth / maxHit * (100 * autoEatThreshold.value)
         ) /
-        combatTriangle.value[getCombatStyle(data.combatStyle)][
-        getCombatStyle(attackStyle)
-        ]
+        combatMultiplier
       )
     ) + intimidation
   );
