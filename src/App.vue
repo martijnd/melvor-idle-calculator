@@ -4,59 +4,97 @@
       <h1 class="text-2xl font-bold text-center">Melvor Idle calculator</h1>
       <hr class="my-4" />
       <div class="sticky top-0 mb-1 bg-dark">
-        <div v-if="data.inputsVisible"
-          class="flex flex-col justify-center py-4 mt-4 space-y-4 md:flex-row md:space-x-4 md:space-y-0">
-          <div class="flex space-x-4 md:w-1/2">
-            <label for="totalHealth" class="w-1/2">
-              <div class="mb-1 font-semibold">Total health</div>
-              <input id="totalHealth" class="w-full px-4 py-2 text-white rounded bg-dark-light" type="number"
-                :step="data.mode === 'Normal' ? 10 : 100" min="0" v-model="data.totalHealth" />
-            </label>
-            <label for="currentDR" class="w-1/2">
-              <div class="mb-1 font-semibold">Current DR (%)</div>
-              <input id="currentDR" class="w-full px-4 py-2 text-white rounded bg-dark-light" type="number" step="1"
-                min="0" max="100" v-model="data.currentDR" />
-            </label>
+        <div v-if="data.inputsVisible">
+          <div class="flex flex-col justify-center py-4 mt-4 space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+            <div class="flex space-x-4 md:w-1/2">
+              <label for="totalHealth" class="w-1/2">
+                <div class="mb-1 font-semibold">Total health</div>
+                <input id="totalHealth" class="w-full px-4 py-2 text-white rounded bg-dark-light" type="number"
+                  :step="data.mode === 'Normal' ? 10 : 100" min="0" v-model="data.totalHealth" />
+              </label>
+              <label for="currentDR" class="w-1/2">
+                <div class="mb-1 font-semibold">Current DR (%)</div>
+                <input id="currentDR" class="w-full px-4 py-2 text-white rounded bg-dark-light" type="number" step="1"
+                  min="0" max="100" v-model="data.currentDR" />
+              </label>
+            </div>
+            <div class="flex space-x-4 md:w-1/2">
+              <label for="autoEatLevel" class="w-1/2">
+                <div class="mb-1 font-semibold">Auto Eat</div>
+                <select id="autoEatLevel" class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
+                  v-model="data.autoEatLevel">
+                  <option v-for="value of [1, 2, 3]" :value="value">
+                    Level {{ value }}
+                  </option>
+                </select>
+              </label>
+              <label for="combatStyle" class="w-1/2">
+                <div class="mb-1 font-semibold">Combat style</div>
+                <select id="combatStyle" class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
+                  v-model="data.combatStyle">
+                  <option v-for="value of ['Melee', 'Ranged', 'Magic']" :value="value">
+                    {{ value }}
+                  </option>
+                </select>
+              </label>
+            </div>
+            <div class="flex space-x-4 md:w-1/2">
+              <label for="wastefulRing" class="w-1/2">
+                <div class="mb-1 font-semibold">Wasteful ring</div>
+                <select id="wastefulRing" class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
+                  v-model="data.wastefulRing">
+                  <option v-for="value of ['Yes', 'No']" :value="value">
+                    {{ value }}
+                  </option>
+                </select>
+              </label>
+              <label for="guardianAmulet" class="w-1/2">
+                <div class="mb-1 font-semibold">Guardian am.</div>
+                <select id="guardianAmulet" class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
+                  v-model="data.guardianAmulet">
+                  <option v-for="value of ['Yes', 'No']" :value="value">
+                    {{ value }}
+                  </option>
+                </select>
+              </label>
+            </div>
           </div>
-          <div class="flex space-x-4 md:w-1/2">
-            <label for="autoEatLevel" class="w-1/2">
-              <div class="mb-1 font-semibold">Auto Eat</div>
-              <select id="autoEatLevel" class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
-                v-model="data.autoEatLevel">
-                <option v-for="value of [1, 2, 3]" :value="value">
-                  Level {{ value }}
-                </option>
-              </select>
-            </label>
-            <label for="combatStyle" class="w-1/2">
-              <div class="mb-1 font-semibold">Combat style</div>
-              <select id="combatStyle" class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
-                v-model="data.combatStyle">
-                <option v-for="value of ['Melee', 'Ranged', 'Magic']" :value="value">
-                  {{ value }}
-                </option>
-              </select>
-            </label>
-          </div>
-          <div class="flex space-x-4 md:w-1/2">
-            <label for="autoEatLevel" class="w-1/2">
-              <div class="mb-1 font-semibold">Wasteful ring</div>
-              <select id="wastefulRing" class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
-                v-model="data.wastefulRing">
-                <option v-for="value of ['Yes', 'No']" :value="value">
-                  {{ value }}
-                </option>
-              </select>
-            </label>
-            <label for="combatStyle" class="w-1/2">
-              <div class="mb-1 font-semibold">Guardian am.</div>
-              <select id="guardianAmulet" class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
-                v-model="data.guardianAmulet">
-                <option v-for="value of ['Yes', 'No']" :value="value">
-                  {{ value }}
-                </option>
-              </select>
-            </label>
+          <div class="flex flex-col py-4 pt-0 space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+            <div class="flex space-x-4 md:w-1/2">
+              <label for="mode" class="w-1/2">
+                <div class="mb-1 font-semibold">Mode</div>
+                <select id="mode" class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light" v-model="data.mode">
+                  <option v-for="value of ['Normal', 'Adventure']" :value="value">
+                    {{ value }}
+                  </option>
+                </select>
+              </label>
+              <label for="yakSynergy" class="w-1/2">
+                <div class="mb-1 font-semibold">Yak synergy</div>
+                <select id="yakSynergy" class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
+                  v-model="data.yakSynergy">
+                  <option v-for="value of ['None', 'Minotaur', 'Centaur', 'Witch']" :value="value">
+                    {{ value }}
+                  </option>
+                </select>
+              </label>
+            </div>
+            <div class="flex space-x-4 md:w-1/2">
+              <label for="stunDamage" class="w-1/2">
+                <div class="mb-1 font-semibold">Stun damage</div>
+                <select id="stunDamage" class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
+                  v-model="data.stunDamage">
+                  <option v-for="value of ['Yes', 'No']" :value="value">
+                    {{ value }}
+                  </option>
+                </select>
+              </label>
+              <label for="slayerAreaNegation" class="w-1/2">
+                <div class="mb-1 font-semibold">Slayer area negation (%)</div>
+                <input id="slayerAreaNegation" class="w-full px-4 py-2 text-white rounded bg-dark-light" type="number"
+                  step="1" min="0" max="150" v-model="data.slayerAreaNegation" />
+              </label>
+            </div>
           </div>
         </div>
         <div class="flex items-center justify-between py-2 text-sm italic text-center text-gray-300">
@@ -473,7 +511,6 @@ function calculateSpecialAttackDamage(
   areas: ReadonlyArray<string>
 ) {
   let baseDamage = specialAttack * numberMultiplier.value;
-
   let multiplier = 1;
   if (data.stunDamage === "Yes") {
     if (canStun) {
@@ -662,7 +699,7 @@ function getSpecialAttack(
     if ("fixedAttack" in attack) {
       if (attack.fixedAttack) {
         maxHit = calculateSpecialAttackDamage(
-          maxHit,
+          attack.maxHit,
           monster.canStun,
           monster.canSleep,
           monster.areas
@@ -875,6 +912,14 @@ function calculateReducedMaxHit(
 watch(data, (data) => {
   localStorage["data"] = JSON.stringify(data);
 });
+
+watch(() => data.mode, (mode) => {
+  if (mode === 'Adventure') {
+    data.totalHealth = data.totalHealth * 10;
+  } else {
+    data.totalHealth = data.totalHealth / 10;
+  }
+})
 </script>
 
 <style>
