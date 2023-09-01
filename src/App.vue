@@ -142,7 +142,6 @@
           <table class="w-full">
             <thead>
               <tr>
-                <th></th>
                 <th class="px-4 py-2 text-left">Name</th>
                 <th class="hidden px-4 py-2 text-left md:table-cell">
                   Attack style
@@ -161,10 +160,6 @@
                 ? `bg-[#1a7c43]`
                 : `bg-[#6b2727]`
                 ">
-                <td class="hidden px-4 md:table-cell">
-                  <img class="w-10 h-10" :src="`https://cdn.melvor.net/core/v018/assets/media/monsters/${monster.image}`"
-                    :alt="monster.name" />
-                </td>
                 <td class="px-4 py-2">
                   <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">
                     {{ monster.name }}</a>
