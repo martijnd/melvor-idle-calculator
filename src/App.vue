@@ -174,7 +174,7 @@
                   ({{ getReducedMaxHit(getAttacks(monster, false)) }})
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
-                  {{ calculateMinimumDR(
+                  {{ getMinimumDR(
                     monster.attackStyle,
                     getMaxHit(getAttacks(monster, false)),
                     monster.intimidation
@@ -242,7 +242,7 @@
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
                   {{
-                    calculateMinimumDR(
+                    getMinimumDR(
                       monster.attackStyle,
                       getMaxHit(getAttacks(monster, false)),
                       monster.intimidation
@@ -310,7 +310,7 @@
                   ({{ getReducedMaxHit(getAttacks(monster, true)) }})
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
-                  {{ calculateMinimumDR(
+                  {{ getMinimumDR(
                     monster.attackStyle,
                     getMaxHit(getAttacks(monster, false)),
                     monster.intimidation
@@ -366,7 +366,7 @@
                   ({{ getReducedMaxHit(getAttacks(monster, true)) }})
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
-                  {{ calculateMinimumDR(
+                  {{ getMinimumDR(
                     monster.attackStyle,
                     getMaxHit(getAttacks(monster, false)),
                     monster.intimidation
@@ -476,36 +476,6 @@ const autoEatTreshold = computed(() => {
   );
 });
 
-function getMultiplier(monsterAttackStyle: Monster["attackStyle"]) {
-  if (monsterAttackStyle === null) return 1;
-  const multipliers = {
-    Melee: {
-      Ranged: 1.25,
-      Magic: 0.5,
-      Melee: 1,
-    },
-    Ranged: {
-      Melee: 0.95,
-      Magic: 1.25,
-      Ranged: 1,
-    },
-    Magic: {
-      Melee: 1.25,
-      Ranged: 0.85,
-      Magic: 1,
-    },
-  } as const;
-
-  return multipliers[data.combatStyle][monsterAttackStyle];
-}
-
-function getNettoDR(monsterAttackStyle: Monster["attackStyle"]) {
-  return Math.floor(
-    getMultiplier(monsterAttackStyle) *
-    (Number(data.currentDR) + (data.guardianAmulet === "Yes" ? 5 : 0))
-  );
-}
-
 const canIdleDungeon = computed(() => {
   if (dungeonChoiceMonsters.value) {
     return dungeonChoiceMonsters.value.every((monster) =>
@@ -531,6 +501,42 @@ const numberMultiplier = computed(() => {
     return 100;
   }
   return 10;
+});
+
+const autoEatThreshold = computed(() => {
+  let aethreshold = 0;
+  switch (data.autoEatLevel) {
+    case 1:
+      aethreshold = 0.2;
+      break;
+    case 2:
+      aethreshold = 0.3;
+      break;
+    case 3:
+      aethreshold = 0.4;
+      break;
+  }
+
+  if (data.wastefulRing === "Yes") {
+    aethreshold = aethreshold + 0.05;
+  }
+
+  return aethreshold;
+});
+
+const combatTriangle = computed(() => {
+  if (data.mode === "Normal") {
+    return [
+      [1, 1.25, 0.75],
+      [0.95, 1, 1.25],
+      [1.25, 0.85, 1],
+    ];
+  }
+  return [
+    [1, 1.25, 0.5],
+    [0.75, 1, 1.25],
+    [1.25, 0.75, 1],
+  ];
 });
 
 function calculateNormalAttack(monster: Monster) {
@@ -646,18 +652,6 @@ function getIsIdleable(maxHit: number) {
   return maxHit <= data.totalHealth * autoEatThreshold.value;
 }
 
-function getMinimumDR(attacks: ReadonlyArray<CalculatedAttack>) {
-  return attacks.reduce((previousValue, currentValue) => {
-    return Math.max(previousValue, currentValue.minimumDR);
-  }, 0);
-}
-
-function getMinimumHP(attacks: ReadonlyArray<CalculatedAttack>) {
-  return attacks.reduce((previousValue, currentValue) => {
-    return Math.max(previousValue, currentValue.minimumHP);
-  }, 0);
-}
-
 function getMaxHit(attacks: ReadonlyArray<CalculatedAttack>) {
   return attacks.reduce((previousValue, currentValue) => {
     return Math.max(previousValue, currentValue.maxHit);
@@ -681,12 +675,12 @@ function getNormalAttack(
     isSlayer,
     monster.intimidation
   );
-  const minimumDR = calculateMinimumDR(
+  const minimumDR = getMinimumDR(
     monster.attackStyle,
     maxHit,
     monster.intimidation
   );
-  const minimumHP = calculateMinimumHP(
+  const minimumHP = getMinimumHP(
     monster.attackStyle,
     maxHit,
     isSlayer,
@@ -769,12 +763,12 @@ function getSpecialAttack(
     isSlayer,
     monster.intimidation
   );
-  const minimumDR = calculateMinimumDR(
+  const minimumDR = getMinimumDR(
     monster.attackStyle,
     maxHit,
     monster.intimidation
   );
-  const minimumHP = calculateMinimumHP(
+  const minimumHP = getMinimumHP(
     monster.attackStyle,
     maxHit,
     isSlayer,
@@ -828,7 +822,7 @@ function calculateYakDRModifier(
   return 0;
 }
 
-function getCombatStyle(style: AttackStyle) {
+function getCombatStyleIndex(style: AttackStyle) {
   switch (style) {
     case "Melee":
       return 0;
@@ -839,12 +833,12 @@ function getCombatStyle(style: AttackStyle) {
   }
 }
 
-function calculateMinimumDR(
+function getMinimumDR(
   attackStyle: AttackStyle,
   maxHit: number,
   intimidation: number
 ) {
-  const combatMultiplier = combatTriangle.value[getCombatStyle(data.combatStyle)][getCombatStyle(attackStyle)];
+  const combatMultiplier = combatTriangle.value[getCombatStyleIndex(data.combatStyle)][getCombatStyleIndex(attackStyle)];
   return Math.max(
     0,
     Math.min(
@@ -859,7 +853,7 @@ function calculateMinimumDR(
   );
 }
 
-function calculateMinimumHP(
+function getMinimumHP(
   attackStyle: AttackStyle,
   maxHit: number,
   isSlayer: boolean,
@@ -876,8 +870,8 @@ function calculateMinimumHP(
           (maxHit *
             Math.floor(
               yakAdjustedDr *
-              combatTriangle.value[getCombatStyle(data.combatStyle)][
-              getCombatStyle(attackStyle)
+              combatTriangle.value[getCombatStyleIndex(data.combatStyle)][
+              getCombatStyleIndex(attackStyle)
               ]
             )) /
           100
@@ -888,41 +882,7 @@ function calculateMinimumHP(
   );
 }
 
-const autoEatThreshold = computed(() => {
-  let aethreshold = 0;
-  switch (data.autoEatLevel) {
-    case 1:
-      aethreshold = 0.2;
-      break;
-    case 2:
-      aethreshold = 0.3;
-      break;
-    case 3:
-      aethreshold = 0.4;
-      break;
-  }
 
-  if (data.wastefulRing === "Yes") {
-    aethreshold = aethreshold + 0.05;
-  }
-
-  return aethreshold;
-});
-
-const combatTriangle = computed(() => {
-  if (data.mode === "Normal") {
-    return [
-      [1, 1.25, 0.75],
-      [0.95, 1, 1.25],
-      [1.25, 0.85, 1],
-    ];
-  }
-  return [
-    [1, 1.25, 0.5],
-    [0.75, 1, 1.25],
-    [1.25, 0.75, 1],
-  ];
-});
 
 function calculateReducedMaxHit(
   attackStyle: AttackStyle,
@@ -935,8 +895,8 @@ function calculateReducedMaxHit(
     intimidatedDR + calculateYakDRModifier(attackStyle, isSlayer);
   const combatAdjustedDr = Math.floor(
     yakAdjustedDr *
-    combatTriangle.value[getCombatStyle(data.combatStyle)][
-    getCombatStyle(attackStyle)
+    combatTriangle.value[getCombatStyleIndex(data.combatStyle)][
+    getCombatStyleIndex(attackStyle)
     ]
   );
   const attackReduction = maxHit * (Math.min(100, combatAdjustedDr) / 100);
@@ -951,8 +911,8 @@ function calculateReducedMaxHit(
       (maxHit *
         Math.floor(
           (yakAdjustedDr + 5) *
-          combatTriangle.value[getCombatStyle(data.combatStyle)][
-          getCombatStyle(attackStyle)
+          combatTriangle.value[getCombatStyleIndex(data.combatStyle)][
+          getCombatStyleIndex(attackStyle)
           ]
         )) /
       100
