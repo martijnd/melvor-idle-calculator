@@ -388,6 +388,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive, watch } from "vue";
 import { Monster, dungeons, monsters, slayerTiers, slayerAreas } from "./data";
+import { Attack, CalculatedAttack } from './types';
 
 onMounted(() => {
   if (localStorage["data"]) {
@@ -668,27 +669,6 @@ function getReducedMaxHit(attacks: ReadonlyArray<CalculatedAttack>) {
     return Math.max(previousValue, attack.reducedMaxHit);
   }, 0);
 }
-
-type Attack = {
-  name: string;
-} & (
-    | {
-      fixedAttack: true;
-      maxHit: number;
-    }
-    | {
-      fixedAttack: false;
-      maxHitMultiplier: number;
-    }
-  );
-
-type CalculatedAttack = {
-  minimumDR: number;
-  minimumHP: number;
-  isIdleable: boolean;
-  maxHit: number;
-  reducedMaxHit: number;
-} & Attack;
 
 function getNormalAttack(
   monster: Monster,
