@@ -3465,3 +3465,155 @@ export const monsters = [
     areas: ["Millennium Gate"],
   },
 ] as const;
+
+export const slayerAreas = [
+  {
+    name: "Penumbra",
+    monsters: [
+      "Mummy",
+      "Statue",
+      "Stone Snake",
+      "Undead Werewolf",
+      "Vampire",
+      "Fierce Devil",
+    ],
+  },
+  {
+    name: "Forest of Goo",
+    monsters: [
+      "Goo Monster",
+      "Green Goo Monster",
+      "Purple Goo Monster",
+      "Scattered Goo Monster",
+    ],
+  },
+  {
+    name: "Strange Cave",
+    monsters: [
+      "Lots of Eyes",
+      "Many Eyed Monster",
+      "Strange Eyed Monster",
+      "Eyes",
+      "Superior Eyed Monster",
+      "Eye of Fear",
+    ],
+  },
+  {
+    name: "Holy Isles",
+    monsters: [
+      "Fairy",
+      "Valkyrie",
+      "Angel",
+      "Holy Archer",
+      "Paladin",
+      "Priest",
+    ],
+  },
+  {
+    name: "Runic Ruins",
+    monsters: ["Druid", "Thief", "Shaman", "Necromancer", "Elementalist"],
+  },
+  {
+    name: "Arid Plains",
+    monsters: [
+      "Turkul Riders",
+      "Turkul Archers",
+      "Turkul Throwers",
+      "Turkul Giant",
+      "Turkul General",
+      "Sand Beast",
+    ],
+  },
+  { name: "High Lands", monsters: ["Griffin", "Pegasus"] },
+  {
+    name: "Toxic Swamps",
+    monsters: ["Noxious Serpent", "Venomous Snake", "Giant Moth"],
+  },
+  {
+    name: "Desolate Plains",
+    monsters: [
+      "Raging Horned Elite",
+      "Seething Horned Elite",
+      "Dark Horned Elite",
+      "Furious Horned Elite",
+    ],
+  },
+  {
+    name: "Shrouded Badlands",
+    monsters: [
+      "Rancora Spider",
+      "Elder Vampire",
+      "Cursed Maiden",
+      "Bounty Hunter",
+    ],
+  },
+  {
+    name: "Perilous Peaks",
+    monsters: [
+      "Wicked Greater Dragon",
+      "Hunting Greater Dragon",
+      "Chaotic Greater Dragon",
+    ],
+  },
+  { name: "Dark Waters", monsters: ["Umbora", "Rokken", "Ku-tul"] },
+  {
+    name: "Unhallowed Wasteland",
+    monsters: [
+      "Legaran Wurm",
+      "Cursed Lich",
+      "Spiked Red Claw",
+      "Greater Skeletal Dragon",
+    ],
+  },
+  {
+    name: "Jungle Labyrinth",
+    monsters: ["Hungry Plant", "Poison Toad", "Kongamato", "Conda", "Alraune"],
+  },
+  {
+    name: "Lava Lake",
+    monsters: [
+      "Burning Snake",
+      "Infernal Golem",
+      "Magic Fire Demon",
+      "Manticore",
+      "Gret-Yun",
+    ],
+  },
+  {
+    name: "Forsaken Tundra",
+    monsters: [
+      "Large Ice Troll",
+      "Frost Golem",
+      "Polar Bear",
+      "Spectral Ice Wolf",
+      "Ice Hydra",
+    ],
+  },
+  {
+    name: "Foggy Lake",
+    monsters: ["Siren", "Monster Croc", "Leviathan", "Twin Sea Dragon Serpent"],
+  },
+  {
+    name: "Afflicted City",
+    monsters: [
+      "Shadow Beast",
+      "Plague Doctor",
+      "Cockatrice",
+      "Goliath Werewolf",
+    ],
+  },
+  { name: "Midnight Valley", monsters: ["Phantom", "Banshee", "Spectre"] },
+  {
+    name: "Golden Cloud Mountains",
+    monsters: ["Torvair", "Arctair", "Harkair"],
+  },
+  {
+    name: "Millennium Gate",
+    monsters: [
+      "Vorloran Devastator",
+      "Vorloran Watcher",
+      "Vorloran Protector",
+      "Guardian of the Herald",
+    ],
+  },
+] as const;

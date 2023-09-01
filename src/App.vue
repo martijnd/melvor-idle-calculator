@@ -122,6 +122,12 @@
             }`" @click="data.activeTab = 'dungeons'">
             Dungeons
           </button>
+          <button :class="`tab border px-4 py-2 border-r-0 flex-1 hover:bg-dark-lighter ${data.activeTab === 'slayerAreas'
+            ? 'font-bold bg-dark'
+            : 'bg-dark-light'
+            }`" @click="data.activeTab = 'slayerAreas'">
+            Slayer areas
+          </button>
           <button :class="`tab border px-4 py-2 rounded-tr flex-1 hover:bg-dark-lighter ${data.activeTab === 'slayer'
             ? 'font-bold bg-dark'
             : 'bg-dark-light'
@@ -314,6 +320,62 @@
             </tbody>
           </table>
         </div>
+        <div class="p-4" v-if="data.activeTab === 'slayerAreas'">
+          <div class="flex items-center justify-between my-4">
+            <h2 class="text-xl font-semibold">
+              Slayer areas
+            </h2>
+            <select id="slayerAreas" class="text-white px-4 py-2 rounded bg-[#474747]" v-model="data.slayerArea">
+              <option v-for="area of slayerAreas" :value="area.name">
+                {{ area.name }}
+              </option>
+            </select>
+          </div>
+          <table class="w-full">
+            <thead>
+              <tr>
+                <th class="px-4 py-2 text-left">Name</th>
+                <th class="hidden px-4 py-2 text-left md:table-cell">
+                  Attack style
+                </th>
+                <th class="hidden px-4 py-2 text-right tabular-nums md:table-cell">
+                  Max hit
+                </th>
+                <th class="px-4 py-2 text-right tabular-nums">
+                  Reduced Max hit
+                </th>
+                <th class="px-4 py-2 text-right tabular-nums">DR needed (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="monster of slayerAreaMonsters" :class="calculateIdleability(getMaxHit(getAttacks(monster, true)))
+                ? `bg-[#1a7c43]`
+                : `bg-[#6b2727]`
+                ">
+                <td class="px-4 py-2">
+                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">{{
+                    monster.name }}</a>
+                </td>
+                <td class="hidden px-4 py-2 md:table-cell">
+                  {{ monster.attackStyle }}
+                </td>
+                <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">
+                  {{ getMaxHit(getAttacks(monster, true)) }}
+                </td>
+                <td class="px-4 py-2 text-right tabular-nums">
+                  ({{ getReducedMaxHit(getAttacks(monster, true)) }})
+                </td>
+                <td class="px-4 py-2 text-right tabular-nums">
+                  {{ calculateMinimumDR(
+                    monster.attackStyle,
+                    getMaxHit(getAttacks(monster, false)),
+                    monster.intimidation
+                  ) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
     <footer class="text-center py-4 border-t border-[#272727] text-[#686868]">
@@ -325,7 +387,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, reactive, watch } from "vue";
-import { Monster, dungeons, monsters, slayerTiers } from "./data";
+import { Monster, dungeons, monsters, slayerTiers, slayerAreas } from "./data";
 
 onMounted(() => {
   if (localStorage["data"]) {
@@ -335,6 +397,7 @@ onMounted(() => {
 
 interface Data {
   mode: string;
+  slayerArea: typeof slayerAreas[number]["name"];
   slayerTier:
   | "Easy"
   | "Normal"
@@ -353,12 +416,13 @@ interface Data {
   stunDamage: "Yes" | "No";
   slayerAreaNegation: number;
   dungeonChoice: (typeof dungeons)[number]["name"];
-  activeTab: "monsters" | "dungeons" | "slayer";
+  activeTab: "monsters" | "dungeons" | "slayer" | 'slayerAreas';
   inputsVisible: boolean;
 }
 
 const data = reactive<Data>({
   mode: "Normal",
+  slayerArea: "Penumbra",
   slayerTier: "Easy",
   totalHealth: 600,
   currentDR: 20,
@@ -385,6 +449,13 @@ const slayerTierMonsters = computed(
   () =>
     slayerTiers
       .find((dungeon) => dungeon.name === data.slayerTier)
+      ?.monsters.map(getMonster)
+);
+
+const slayerAreaMonsters = computed(
+  () =>
+    slayerAreas
+      .find((dungeon) => dungeon.name === data.slayerArea)
       ?.monsters.map(getMonster)
 );
 
