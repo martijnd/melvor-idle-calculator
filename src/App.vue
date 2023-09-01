@@ -477,23 +477,23 @@ const autoEatTreshold = computed(() => {
 });
 
 const canIdleDungeon = computed(() => {
-  if (dungeonChoiceMonsters.value) {
-    return dungeonChoiceMonsters.value.every((monster) =>
-      calculateIdleability(getMaxHit(getAttacks(monster, false)))
-    );
+  if (!dungeonChoiceMonsters.value) {
+    return false;
   }
 
-  return false;
+  return dungeonChoiceMonsters.value.every((monster) =>
+    calculateIdleability(getMaxHit(getAttacks(monster, false)))
+  );
 });
 
 const canIdleSlayerTier = computed(() => {
-  if (slayerTierMonsters.value) {
-    return slayerTierMonsters.value.every((monster) =>
-      calculateIdleability(getMaxHit(getAttacks(monster, false)))
-    );
+  if (!slayerTierMonsters.value) {
+    return false;
   }
 
-  return false;
+  return slayerTierMonsters.value.every((monster) =>
+    calculateIdleability(getMaxHit(getAttacks(monster, false)))
+  );
 });
 
 const numberMultiplier = computed(() => {
@@ -504,24 +504,13 @@ const numberMultiplier = computed(() => {
 });
 
 const autoEatThreshold = computed(() => {
-  let aethreshold = 0;
-  switch (data.autoEatLevel) {
-    case 1:
-      aethreshold = 0.2;
-      break;
-    case 2:
-      aethreshold = 0.3;
-      break;
-    case 3:
-      aethreshold = 0.4;
-      break;
-  }
+  const baseTreshold = data.wastefulRing === "Yes" ? 0.05 : 0;
 
-  if (data.wastefulRing === "Yes") {
-    aethreshold = aethreshold + 0.05;
-  }
-
-  return aethreshold;
+  return {
+    1: baseTreshold + 0.2,
+    2: baseTreshold + 0.3,
+    3: baseTreshold + 0.4,
+  }[data.autoEatLevel];
 });
 
 const combatTriangle = computed(() => {
