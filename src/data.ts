@@ -175,10 +175,7 @@ export const slayerTiers = [
 ] as const;
 
 export const dungeons = [
-  {
-    name: "Chicken Coop",
-    monsters: ["Chicken", "Chick", "Mumma Chicken"],
-  },
+  { name: "Chicken Coop", monsters: ["Chicken", "Chick", "Mumma Chicken"] },
   {
     name: "Undead Graveyard",
     monsters: ["Zombie Hand", "Zombie", "Ghost", "Zombie Leader"],
@@ -193,12 +190,7 @@ export const dungeons = [
   },
   {
     name: "Spider Forest",
-    monsters: [
-      "Spider (lv. 51)",
-      "Spider (lv. 52)",
-      "Evil Spider",
-      "Spider King",
-    ],
+    monsters: ["Spider", "Brown Spider", "Evil Spider", "Spider King"],
   },
   {
     name: "Miolite Caves",
@@ -233,7 +225,7 @@ export const dungeons = [
       "Bat",
       "Big Bat",
       "The Eye",
-      "The Resurrected Eye",
+      "Resurrected Eye",
       "Vicious Serpent",
       "Fire Spirit",
       "Prat, the Protector of Secrets",
@@ -294,6 +286,61 @@ export const dungeons = [
       "Pyra",
       "Ignis",
       "Ragnar",
+    ],
+  },
+  {
+    name: "Ancient Sanctuary",
+    monsters: [
+      "Hungry Plant",
+      "Poison Toad",
+      "Kongamato",
+      "Conda",
+      "Alraune",
+      "Morellia",
+    ],
+  },
+  {
+    name: "Underground Lava Lake",
+    monsters: [
+      "Burning Snake",
+      "Infernal Golem",
+      "Magic Fire Demon",
+      "Manticore",
+      "Gret-Yun",
+      "Trogark",
+    ],
+  },
+  {
+    name: "Lightning Region",
+    monsters: [
+      "Lightning Spirit",
+      "Lightning Monkey",
+      "Lightning Golem",
+      "RaZu, Lord of the Skies",
+    ],
+  },
+  {
+    name: "Lair of the Spider Queen",
+    monsters: [
+      "Scouter Spider",
+      "Trapper Spider",
+      "Wicked Spider",
+      "Basher Spider",
+      "Enforcer Spider",
+      "Guardian Spider",
+    ],
+  },
+  {
+    name: "Cursed Forest",
+    monsters: ["Tree Giant", "Tree Spirit", "Cursed Spirit", "Lady Darkheart"],
+  },
+  {
+    name: "Necromancers Palace",
+    monsters: [
+      "Cursed Skeleton Warrior",
+      "Bel-Noth",
+      "Dark Knight",
+      "Fiozor, the Ancient Necromancer",
     ],
   },
 ] as const;
@@ -3228,7 +3275,6 @@ export const monsters = [
   //   canStun: false,
   //   canSleep: false,
   //   attackStyle: null,
-  //   attackStyle: "Melee",
   //   usesNormalHit: false,
   //   specialAttack: [
   //     { name: "Web Trap", maxHit: 0, fixedAttack: true },
