@@ -18,3 +18,5 @@ export type Attack = {
       maxHitMultiplier: number;
     }
 );
+
+export type AttackStyle = "Melee" | "Ranged" | "Magic";

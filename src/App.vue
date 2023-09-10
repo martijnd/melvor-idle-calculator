@@ -162,10 +162,10 @@
                 ">
                 <td class="px-4 py-2">
                   <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">
-                    {{ monster.name }}</a>
+                    {{ monster.specs.name }}</a>
                 </td>
                 <td class="hidden px-4 py-2 md:table-cell">
-                  {{ monster.attackStyle ?? "N/A" }}
+                  {{ monster.specs.attackStyle ?? "N/A" }}
                 </td>
                 <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">
                   {{ calculateMonsterMaxAttack(monster) }}
@@ -175,9 +175,9 @@
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
                   {{ getMinimumDR(
-                    monster.attackStyle,
+                    monster.specs.attackStyle,
                     getMaxHit(getAttacks(monster, false)),
-                    monster.intimidation
+                    monster.specs.intimidation
                   ) }}
                 </td>
               </tr>
@@ -228,11 +228,12 @@
                 : `bg-[#6b2727]`
                 ">
                 <td class="px-4 py-2">
-                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">{{
-                    monster.name }}</a>
+                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.specs.name}`"
+                    target="_blank">{{
+                      monster.specs.name }}</a>
                 </td>
                 <td class="hidden px-4 py-2 md:table-cell">
-                  {{ monster.attackStyle }}
+                  {{ monster.specs.attackStyle }}
                 </td>
                 <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">
                   {{ getMaxHit(getAttacks(monster, false)) }}
@@ -243,9 +244,9 @@
                 <td class="px-4 py-2 text-right tabular-nums">
                   {{
                     getMinimumDR(
-                      monster.attackStyle,
+                      monster.specs.attackStyle,
                       getMaxHit(getAttacks(monster, false)),
-                      monster.intimidation
+                      monster.specs.intimidation
                     )
                   }}
                 </td>
@@ -297,11 +298,12 @@
                 : `bg-[#6b2727]`
                 ">
                 <td class="px-4 py-2">
-                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">{{
-                    monster.name }}</a>
+                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.specs.name}`"
+                    target="_blank">{{
+                      monster.specs.name }}</a>
                 </td>
                 <td class="hidden px-4 py-2 md:table-cell">
-                  {{ monster.attackStyle }}
+                  {{ monster.specs.attackStyle }}
                 </td>
                 <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">
                   {{ getMaxHit(getAttacks(monster, true)) }}
@@ -311,9 +313,9 @@
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
                   {{ getMinimumDR(
-                    monster.attackStyle,
+                    monster.specs.attackStyle,
                     getMaxHit(getAttacks(monster, false)),
-                    monster.intimidation
+                    monster.specs.intimidation
                   ) }}
                 </td>
               </tr>
@@ -353,11 +355,12 @@
                 : `bg-[#6b2727]`
                 ">
                 <td class="px-4 py-2">
-                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">{{
-                    monster.name }}</a>
+                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.specs.name}`"
+                    target="_blank">{{
+                      monster.specs.name }}</a>
                 </td>
                 <td class="hidden px-4 py-2 md:table-cell">
-                  {{ monster.attackStyle }}
+                  {{ monster.specs.attackStyle }}
                 </td>
                 <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">
                   {{ getMaxHit(getAttacks(monster, true)) }}
@@ -367,9 +370,9 @@
                 </td>
                 <td class="px-4 py-2 text-right tabular-nums">
                   {{ getMinimumDR(
-                    monster.attackStyle,
+                    monster.specs.attackStyle,
                     getMaxHit(getAttacks(monster, false)),
-                    monster.intimidation
+                    monster.specs.intimidation
                   ) }}
                 </td>
               </tr>
@@ -387,8 +390,9 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, reactive, watch } from "vue";
-import { Monster, dungeons, monsters, slayerTiers, slayerAreas } from "./data";
-import { Attack, CalculatedAttack } from './types';
+import { dungeons, monsters, slayerTiers, slayerAreas } from "./data";
+import { Attack, CalculatedAttack, AttackStyle } from './types';
+import { Monster } from './models/monster'
 
 onMounted(() => {
   if (localStorage["data"]) {
@@ -462,7 +466,7 @@ const slayerAreaMonsters = computed(
 
 function getMonster(monsterString: string) {
   return (
-    monsters.find((monster) => monster.name === monsterString) ?? monsters[0]
+    monsters.find((monster) => monster.specs.name === monsterString)!
   );
 }
 
@@ -530,40 +534,40 @@ const combatTriangle = computed(() => {
 
 function calculateNormalAttack(monster: Monster) {
   let maximumNormalAttack = 0;
-  if (monster.attackStyle === "Melee") {
-    let effectiveAttackLevel = monster.attackLevel + 9;
+  if (monster.specs.attackStyle === "Melee") {
+    let effectiveAttackLevel = monster.specs.attackLevel + 9;
     maximumNormalAttack = Math.floor(
       numberMultiplier.value *
       (1.3 +
         effectiveAttackLevel / 10 +
-        monster.attackBonus / 80 +
-        (effectiveAttackLevel * monster.attackBonus) / 640)
+        monster.specs.attackBonus / 80 +
+        (effectiveAttackLevel * monster.specs.attackBonus) / 640)
     );
-  } else if (monster.attackStyle === "Ranged") {
-    let effectiveAttackLevel = monster.attackLevel + 9;
+  } else if (monster.specs.attackStyle === "Ranged") {
+    let effectiveAttackLevel = monster.specs.attackLevel + 9;
     maximumNormalAttack = Math.floor(
       numberMultiplier.value *
       (1.3 +
         effectiveAttackLevel / 10 +
-        monster.attackBonus / 80 +
-        (effectiveAttackLevel * monster.attackBonus) / 640)
+        monster.specs.attackBonus / 80 +
+        (effectiveAttackLevel * monster.specs.attackBonus) / 640)
     );
-  } else if (monster.attackStyle === "Magic") {
+  } else if (monster.specs.attackStyle === "Magic") {
     maximumNormalAttack = Math.floor(
       numberMultiplier.value *
-      monster.spellMaxHit *
-      (1 + monster.attackBonus / 100) *
-      (1 + (monster.attackLevel + 1) / 200)
+      monster.specs.spellMaxHit *
+      (1 + monster.specs.attackBonus / 100) *
+      (1 + (monster.specs.attackLevel + 1) / 200)
     );
   }
 
   let multiplier = 1;
   if (data.stunDamage === "Yes") {
-    if (monster.canStun) {
+    if (monster.specs.canStun) {
       multiplier = 1.3;
-    } else if (monster.canSleep) {
+    } else if (monster.specs.canSleep) {
       multiplier = 1.2;
-      if (monster.areas[0] === "Foggy Lake")
+      if (monster.specs.areas[0] === "Foggy Lake")
         multiplier += 1.5 - Math.min(150, data.slayerAreaNegation) / 100;
     }
   }
@@ -596,21 +600,21 @@ function calculateMonsterMaxAttack(monster: Monster) {
   let maxNormalAttack = calculateNormalAttack(monster);
   let maxSpecialAttack = 0;
 
-  monster.specialAttack.forEach((specialAttack) => {
+  monster.specs.specialAttack.forEach((specialAttack) => {
     let currentSpecialAttack = 0;
-    if (specialAttack.name === "Savage Spike") {
+    if (specialAttack.name === "Savage Spike" && specialAttack.fixedAttack) {
       currentSpecialAttack = calculateSpecialAttackDamage(
         specialAttack.maxHit + 18,
-        monster.canStun,
-        monster.canSleep,
-        monster.areas
+        monster.specs.canStun,
+        monster.specs.canSleep,
+        monster.specs.areas
       );
     } else if ("maxHit" in specialAttack) {
       currentSpecialAttack = calculateSpecialAttackDamage(
         specialAttack.maxHit,
-        monster.canStun,
-        monster.canSleep,
-        monster.areas
+        monster.specs.canStun,
+        monster.specs.canSleep,
+        monster.specs.areas
       );
     }
     if (currentSpecialAttack > maxSpecialAttack) {
@@ -624,12 +628,12 @@ function calculateMonsterMaxAttack(monster: Monster) {
 function getAttacks(monster: Monster, isSlayer: boolean): CalculatedAttack[] {
   const attacks: CalculatedAttack[] = [];
 
-  if (monster.usesNormalHit) {
+  if (monster.specs.usesNormalHit) {
     attacks.push(getNormalAttack(monster, isSlayer));
   }
 
-  if (monster.specialAttack?.length) {
-    monster.specialAttack.forEach((specialAttack) => {
+  if (monster.specs.specialAttack?.length) {
+    monster.specs.specialAttack.forEach((specialAttack) => {
       attacks.push(getSpecialAttack(specialAttack, monster, isSlayer));
     });
   }
@@ -659,21 +663,21 @@ function getNormalAttack(
 ): CalculatedAttack {
   const maxHit = calculateNormalAttack(monster);
   const reducedMaxHit = calculateReducedMaxHit(
-    monster.attackStyle,
+    monster.specs.attackStyle,
     maxHit,
     isSlayer,
-    monster.intimidation
+    monster.specs.intimidation
   );
   const minimumDR = getMinimumDR(
-    monster.attackStyle,
+    monster.specs.attackStyle,
     maxHit,
-    monster.intimidation
+    monster.specs.intimidation
   );
   const minimumHP = getMinimumHP(
-    monster.attackStyle,
+    monster.specs.attackStyle,
     maxHit,
     isSlayer,
-    monster.intimidation
+    monster.specs.intimidation
   );
   const isIdleable = getIsIdleable(reducedMaxHit);
 
@@ -722,9 +726,9 @@ function getSpecialAttack(
   } else if (attack.name === "Savage Spike") {
     maxHit = calculateSpecialAttackDamage(
       maxHit + 18,
-      monster.canStun,
-      monster.canSleep,
-      monster.areas
+      monster.specs.canStun,
+      monster.specs.canSleep,
+      monster.specs.areas
     ); // Might need to change this if TotH enemies use Savage Spike
   } else if (attack.name === "Horn Shots") {
     maxHit = Math.floor(calculateNormalAttack(monster) * 0.6);
@@ -734,9 +738,9 @@ function getSpecialAttack(
       if (attack.fixedAttack) {
         maxHit = calculateSpecialAttackDamage(
           attack.maxHit,
-          monster.canStun,
-          monster.canSleep,
-          monster.areas
+          monster.specs.canStun,
+          monster.specs.canSleep,
+          monster.specs.areas
         ); // Damage is fixed
       } else {
         maxHit = Math.floor(
@@ -747,21 +751,21 @@ function getSpecialAttack(
   }
 
   const reducedMaxHit = calculateReducedMaxHit(
-    monster.attackStyle,
+    monster.specs.attackStyle,
     maxHit,
     isSlayer,
-    monster.intimidation
+    monster.specs.intimidation
   );
   const minimumDR = getMinimumDR(
-    monster.attackStyle,
+    monster.specs.attackStyle,
     maxHit,
-    monster.intimidation
+    monster.specs.intimidation
   );
   const minimumHP = getMinimumHP(
-    monster.attackStyle,
+    monster.specs.attackStyle,
     maxHit,
     isSlayer,
-    monster.intimidation
+    monster.specs.intimidation
   );
   const isIdleable = calculateIdleability(reducedMaxHit);
 
@@ -792,7 +796,6 @@ function calculateIdleability(maxHit: number) {
   return maxHit <= data.totalHealth * autoEatThreshold.value;
 }
 
-type AttackStyle = "Melee" | "Ranged" | "Magic";
 
 function calculateYakDRModifier(
   monsterAttackStyle: AttackStyle,
