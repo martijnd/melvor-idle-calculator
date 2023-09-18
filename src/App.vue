@@ -156,7 +156,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of monsters" :class="calculateIdleability(getMaxHit(getAttacks(monster, false)))
+              <tr v-for="monster of monsters" :class="calculateIdleability(getReducedMaxHit(getAttacks(monster, false)))
                 ? `bg-[#1a7c43]`
                 : `bg-[#6b2727]`
                 ">
@@ -223,7 +223,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of dungeonChoiceMonsters" :class="calculateIdleability(getMaxHit(getAttacks(monster, false)))
+              <tr v-for="monster of dungeonChoiceMonsters" :class="calculateIdleability(getReducedMaxHit(getAttacks(monster, false)))
                 ? `bg-[#1a7c43]`
                 : `bg-[#6b2727]`
                 ">
@@ -292,7 +292,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of slayerTierMonsters" :class="calculateIdleability(getMaxHit(getAttacks(monster, true)))
+              <tr v-for="monster of slayerTierMonsters" :class="calculateIdleability(getReducedMaxHit(getAttacks(monster, true)))
                 ? `bg-[#1a7c43]`
                 : `bg-[#6b2727]`
                 ">
@@ -348,13 +348,14 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of slayerAreaMonsters" :class="calculateIdleability(getMaxHit(getAttacks(monster, true)))
+              <tr v-for="monster of slayerAreaMonsters" :class="calculateIdleability(getReducedMaxHit(getAttacks(monster, true)))
                 ? `bg-[#1a7c43]`
                 : `bg-[#6b2727]`
                 ">
                 <td class="px-4 py-2">
-                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">{{
-                    monster.name }}</a>
+                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">
+                    {{ monster.name }}
+                  </a>
                 </td>
                 <td class="hidden px-4 py-2 md:table-cell">
                   {{ monster.attackStyle }}
@@ -913,13 +914,13 @@ watch(data, (data) => {
   localStorage["data"] = JSON.stringify(data);
 });
 
-watch(() => data.mode, (mode) => {
-  if (mode === 'Adventure') {
-    data.totalHealth = data.totalHealth * 10;
-  } else {
-    data.totalHealth = data.totalHealth / 10;
-  }
-})
+// watch(() => data.mode, (mode) => {
+//   if (mode === 'Adventure') {
+//     data.totalHealth = data.totalHealth * 10;
+//   } else {
+//     data.totalHealth = data.totalHealth / 10;
+//   }
+// })
 </script>
 
 <style>
