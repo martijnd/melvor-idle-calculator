@@ -156,7 +156,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of monsters" :class="calculateIdleability(getReducedMaxHit(getAttacks(monster, false)))
+              <tr v-for="monster of monsters" :class="getIsIdleable(getReducedMaxHit(getAttacks(monster, false)))
                 ? `bg-[#1a7c43]`
                 : `bg-[#6b2727]`
                 ">
@@ -223,7 +223,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of dungeonChoiceMonsters" :class="calculateIdleability(getReducedMaxHit(getAttacks(monster, false)))
+              <tr v-for="monster of dungeonChoiceMonsters" :class="getIsIdleable(getReducedMaxHit(getAttacks(monster, false)))
                 ? `bg-[#1a7c43]`
                 : `bg-[#6b2727]`
                 ">
@@ -292,7 +292,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of slayerTierMonsters" :class="calculateIdleability(getReducedMaxHit(getAttacks(monster, true)))
+              <tr v-for="monster of slayerTierMonsters" :class="getIsIdleable(getReducedMaxHit(getAttacks(monster, true)))
                 ? `bg-[#1a7c43]`
                 : `bg-[#6b2727]`
                 ">
@@ -348,7 +348,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of slayerAreaMonsters" :class="calculateIdleability(getReducedMaxHit(getAttacks(monster, true)))
+              <tr v-for="monster of slayerAreaMonsters" :class="getIsIdleable(getReducedMaxHit(getAttacks(monster, true)))
                 ? `bg-[#1a7c43]`
                 : `bg-[#6b2727]`
                 ">
@@ -483,7 +483,7 @@ const canIdleDungeon = computed(() => {
   }
 
   return dungeonChoiceMonsters.value.every((monster) =>
-    calculateIdleability(getMaxHit(getAttacks(monster, false)))
+    getIsIdleable(getReducedMaxHit(getAttacks(monster, false)))
   );
 });
 
@@ -493,7 +493,7 @@ const canIdleSlayerTier = computed(() => {
   }
 
   return slayerTierMonsters.value.every((monster) =>
-    calculateIdleability(getMaxHit(getAttacks(monster, false)))
+    getIsIdleable(getReducedMaxHit(getAttacks(monster, false)))
   );
 });
 
@@ -529,28 +529,29 @@ const combatTriangle = computed(() => {
   ];
 });
 
-function calculateNormalAttack(monster: Monster) {
-  let maximumNormalAttack = 0;
+function getMaximumNormalAttack(monster: Monster) {
   if (monster.attackStyle === "Melee") {
-    let effectiveAttackLevel = monster.attackLevel + 9;
-    maximumNormalAttack = Math.floor(
+    const effectiveAttackLevel = monster.attackLevel + 9;
+    return Math.floor(
       numberMultiplier.value *
       (1.3 +
         effectiveAttackLevel / 10 +
         monster.attackBonus / 80 +
         (effectiveAttackLevel * monster.attackBonus) / 640)
     );
-  } else if (monster.attackStyle === "Ranged") {
-    let effectiveAttackLevel = monster.attackLevel + 9;
-    maximumNormalAttack = Math.floor(
+  }
+  if (monster.attackStyle === "Ranged") {
+    const effectiveAttackLevel = monster.attackLevel + 9;
+    return Math.floor(
       numberMultiplier.value *
       (1.3 +
         effectiveAttackLevel / 10 +
         monster.attackBonus / 80 +
         (effectiveAttackLevel * monster.attackBonus) / 640)
     );
-  } else if (monster.attackStyle === "Magic") {
-    maximumNormalAttack = Math.floor(
+  }
+  if (monster.attackStyle === "Magic") {
+    return Math.floor(
       numberMultiplier.value *
       monster.spellMaxHit *
       (1 + monster.attackBonus / 100) *
@@ -558,66 +559,66 @@ function calculateNormalAttack(monster: Monster) {
     );
   }
 
-  let multiplier = 1;
-  if (data.stunDamage === "Yes") {
-    if (monster.canStun) {
-      multiplier = 1.3;
-    } else if (monster.canSleep) {
-      multiplier = 1.2;
-      if (monster.areas[0] === "Foggy Lake")
-        multiplier += 1.5 - Math.min(150, data.slayerAreaNegation) / 100;
-    }
+  return 0;
+}
+
+function getMultiplier(monster: Monster) {
+  if (data.stunDamage === "No") {
+    return 1;
   }
+
+  if (monster.canStun) {
+    return 1.3;
+  }
+
+  if (!monster.canSleep) {
+    return 1;
+  }
+
+  if (monster.areas[0] === "Foggy Lake") {
+    return 1.2 + 1.5 - Math.min(150, data.slayerAreaNegation) / 100;
+  }
+  return 1.2;
+}
+
+function calculateNormalAttackDamage(monster: Monster) {
+  const maximumNormalAttack = getMaximumNormalAttack(monster);
+
+  const multiplier = getMultiplier(monster);
 
   return Math.floor(maximumNormalAttack * multiplier);
 }
 
 function calculateSpecialAttackDamage(
+  monster: Monster,
   specialAttack: number,
-  canStun: boolean,
-  canSleep: boolean,
-  areas: ReadonlyArray<string>
 ) {
   let baseDamage = specialAttack * numberMultiplier.value;
-  let multiplier = 1;
-  if (data.stunDamage === "Yes") {
-    if (canStun) {
-      multiplier = 1.3;
-    } else if (canSleep) {
-      multiplier = 1.2;
-      if (areas.includes("Foggy Lake"))
-        multiplier += 1.5 - Math.min(150, data.slayerAreaNegation) / 100;
-    }
-  }
+  const multiplier = getMultiplier(monster);
 
   return Math.floor(baseDamage * multiplier);
 }
 
-function calculateMonsterMaxAttack(monster: Monster) {
-  let maxNormalAttack = calculateNormalAttack(monster);
-  let maxSpecialAttack = 0;
+function calculateMonsterSpecialAttackDamage(monster: Monster) {
+  return monster.specialAttack.reduce((maxSpecialAttack, specialAttack) => {
+    if ("maxHit" in specialAttack) {
+      const currentSpecialAttack = calculateSpecialAttackDamage(
+        monster,
+        specialAttack.maxHit + (specialAttack.name === "Savage Spike" ? 18 : 0),
+      );
 
-  monster.specialAttack.forEach((specialAttack) => {
-    let currentSpecialAttack = 0;
-    if (specialAttack.name === "Savage Spike") {
-      currentSpecialAttack = calculateSpecialAttackDamage(
-        specialAttack.maxHit + 18,
-        monster.canStun,
-        monster.canSleep,
-        monster.areas
-      );
-    } else if ("maxHit" in specialAttack) {
-      currentSpecialAttack = calculateSpecialAttackDamage(
-        specialAttack.maxHit,
-        monster.canStun,
-        monster.canSleep,
-        monster.areas
-      );
+      if (currentSpecialAttack > maxSpecialAttack) {
+        return currentSpecialAttack;
+      }
     }
-    if (currentSpecialAttack > maxSpecialAttack) {
-      maxSpecialAttack = currentSpecialAttack;
-    }
-  });
+    return maxSpecialAttack;
+  }, 0);
+}
+
+function calculateMonsterMaxAttack(monster: Monster) {
+  const maxNormalAttack = calculateNormalAttackDamage(monster);
+
+  const maxSpecialAttack = calculateMonsterSpecialAttackDamage(monster);
 
   return Math.max(maxNormalAttack, maxSpecialAttack);
 }
@@ -638,19 +639,15 @@ function getAttacks(monster: Monster, isSlayer: boolean): CalculatedAttack[] {
   return attacks;
 }
 
-function getIsIdleable(maxHit: number) {
-  return maxHit <= data.totalHealth * autoEatThreshold.value;
-}
-
 function getMaxHit(attacks: ReadonlyArray<CalculatedAttack>) {
-  return attacks.reduce((previousValue, currentValue) => {
-    return Math.max(previousValue, currentValue.maxHit);
+  return attacks.reduce((maxAttackDamage, attack) => {
+    return Math.max(maxAttackDamage, attack.maxHit);
   }, 0);
 }
 
 function getReducedMaxHit(attacks: ReadonlyArray<CalculatedAttack>) {
-  return attacks.reduce((previousValue, attack) => {
-    return Math.max(previousValue, attack.reducedMaxHit);
+  return attacks.reduce((maxAttackDamage, attack) => {
+    return Math.max(maxAttackDamage, attack.reducedMaxHit);
   }, 0);
 }
 
@@ -658,7 +655,7 @@ function getNormalAttack(
   monster: Monster,
   isSlayer: boolean
 ): CalculatedAttack {
-  const maxHit = calculateNormalAttack(monster);
+  const maxHit = calculateNormalAttackDamage(monster);
   const reducedMaxHit = calculateReducedMaxHit(
     monster.attackStyle,
     maxHit,
@@ -694,7 +691,7 @@ function getSpecialAttack(
   monster: Monster,
   isSlayer: boolean
 ): CalculatedAttack {
-  let normalHitAttacks = [
+  const normalHitAttacks = [
     "Volley",
     "Burning Trail",
     "Infernal Volley",
@@ -710,9 +707,9 @@ function getSpecialAttack(
   ];
   let maxHit = 0;
   if (normalHitAttacks.includes(attack.name)) {
-    maxHit = calculateNormalAttack(monster);
+    maxHit = calculateNormalAttackDamage(monster);
   } else if (attack.name === "Lesser Sandstorm") {
-    let normalAttack = calculateNormalAttack(monster);
+    let normalAttack = calculateNormalAttackDamage(monster);
     let adjustedAttack = normalAttack + 120 * numberMultiplier.value * 0.05;
     maxHit = Math.ceil(adjustedAttack);
   } else if (attack.name === "Greater Sandstorm") {
@@ -722,26 +719,22 @@ function getSpecialAttack(
     maxHit = 0;
   } else if (attack.name === "Savage Spike") {
     maxHit = calculateSpecialAttackDamage(
+      monster,
       maxHit + 18,
-      monster.canStun,
-      monster.canSleep,
-      monster.areas
     ); // Might need to change this if TotH enemies use Savage Spike
   } else if (attack.name === "Horn Shots") {
-    maxHit = Math.floor(calculateNormalAttack(monster) * 0.6);
+    maxHit = Math.floor(calculateNormalAttackDamage(monster) * 0.6);
   } else {
     // Standard special attack
     if ("fixedAttack" in attack) {
       if (attack.fixedAttack) {
         maxHit = calculateSpecialAttackDamage(
+          monster,
           attack.maxHit,
-          monster.canStun,
-          monster.canSleep,
-          monster.areas
         ); // Damage is fixed
       } else {
         maxHit = Math.floor(
-          (calculateNormalAttack(monster) * attack.maxHitMultiplier) / 100
+          (calculateNormalAttackDamage(monster) * attack.maxHitMultiplier) / 100
         ); // Damage is based off the base damage of the monster
       }
     }
@@ -764,7 +757,7 @@ function getSpecialAttack(
     isSlayer,
     monster.intimidation
   );
-  const isIdleable = calculateIdleability(reducedMaxHit);
+  const isIdleable = getIsIdleable(reducedMaxHit);
 
   if (attack.fixedAttack) {
     return {
@@ -789,7 +782,7 @@ function getSpecialAttack(
   };
 }
 
-function calculateIdleability(maxHit: number) {
+function getIsIdleable(maxHit: number) {
   return maxHit <= data.totalHealth * autoEatThreshold.value;
 }
 
