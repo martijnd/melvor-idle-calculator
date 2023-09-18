@@ -156,34 +156,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of monsters" :class="getIsIdleable(getReducedMaxHit(getAttacks(monster, false, numberMultiplier, data)), data)
-                ? `bg-[#1a7c43]`
-                : `bg-[#6b2727]`
-                ">
-                <td class="px-4 py-2">
-                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">
-                    {{ monster.name }}</a>
-                </td>
-                <td class="hidden px-4 py-2 md:table-cell">
-                  {{ monster.attackStyle ?? "N/A" }}
-                </td>
-                <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">
-                  {{ calculateMonsterMaxAttack(monster, numberMultiplier, data) }}
-                </td>
-                <td class="px-4 py-2 text-right tabular-nums">
-                  ({{ getReducedMaxHit(getAttacks(monster, false, numberMultiplier, data)) }})
-                </td>
-                <td class="px-4 py-2 text-right tabular-nums">
-                  {{
-                    getMinimumDR(
-                      monster.attackStyle,
-                      getMaxHit(getAttacks(monster, false, numberMultiplier, data)),
-                      monster.intimidation,
-                      data
-                    )
-                  }}
-                </td>
-              </tr>
+              <TableContent :monsters="monsters" :data="data" :number-multiplier="numberMultiplier" />
             </tbody>
           </table>
         </div>
@@ -226,34 +199,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of dungeonChoiceMonsters" :class="getIsIdleable(getReducedMaxHit(getAttacks(monster, false, numberMultiplier, data)), data)
-                ? `bg-[#1a7c43]`
-                : `bg-[#6b2727]`
-                ">
-                <td class="px-4 py-2">
-                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">{{
-                    monster.name }}</a>
-                </td>
-                <td class="hidden px-4 py-2 md:table-cell">
-                  {{ monster.attackStyle }}
-                </td>
-                <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">
-                  {{ getMaxHit(getAttacks(monster, false, numberMultiplier, data)) }}
-                </td>
-                <td class="px-4 py-2 text-right tabular-nums">
-                  ({{ getReducedMaxHit(getAttacks(monster, false, numberMultiplier, data)) }})
-                </td>
-                <td class="px-4 py-2 text-right tabular-nums">
-                  {{
-                    getMinimumDR(
-                      monster.attackStyle,
-                      getMaxHit(getAttacks(monster, false, numberMultiplier, data)),
-                      monster.intimidation,
-                      data
-                    )
-                  }}
-                </td>
-              </tr>
+              <TableContent :monsters="dungeonChoiceMonsters" :data="data" :number-multiplier="numberMultiplier" />
             </tbody>
           </table>
         </div>
@@ -296,34 +242,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of slayerTierMonsters" :class="getIsIdleable(getReducedMaxHit(getAttacks(monster, true, numberMultiplier, data)), data)
-                ? `bg-[#1a7c43]`
-                : `bg-[#6b2727]`
-                ">
-                <td class="px-4 py-2">
-                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">{{
-                    monster.name }}</a>
-                </td>
-                <td class="hidden px-4 py-2 md:table-cell">
-                  {{ monster.attackStyle }}
-                </td>
-                <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">
-                  {{ getMaxHit(getAttacks(monster, true, numberMultiplier, data)) }}
-                </td>
-                <td class="px-4 py-2 text-right tabular-nums">
-                  ({{ getReducedMaxHit(getAttacks(monster, true, numberMultiplier, data)) }})
-                </td>
-                <td class="px-4 py-2 text-right tabular-nums">
-                  {{
-                    getMinimumDR(
-                      monster.attackStyle,
-                      getMaxHit(getAttacks(monster, false, numberMultiplier, data)),
-                      monster.intimidation,
-                      data
-                    )
-                  }}
-                </td>
-              </tr>
+              <TableContent :monsters="slayerTierMonsters" :data="data" :number-multiplier="numberMultiplier" />
             </tbody>
           </table>
         </div>
@@ -353,34 +272,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="monster of slayerAreaMonsters" :class="getIsIdleable(getReducedMaxHit(getAttacks(monster, true, numberMultiplier, data)), data)
-                ? `bg-[#1a7c43]`
-                : `bg-[#6b2727]`
-                ">
-                <td class="px-4 py-2">
-                  <a class="hover:underline" :href="`https://wiki.melvoridle.com/w/${monster.name}`" target="_blank">
-                    {{ monster.name }}
-                  </a>
-                </td>
-                <td class="hidden px-4 py-2 md:table-cell">
-                  {{ monster.attackStyle }}
-                </td>
-                <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">
-                  {{ getMaxHit(getAttacks(monster, true, numberMultiplier, data)) }}
-                </td>
-                <td class="px-4 py-2 text-right tabular-nums">
-                  ({{ getReducedMaxHit(getAttacks(monster, true, numberMultiplier, data)) }})
-                </td>
-                <td class="px-4 py-2 text-right tabular-nums">
-                  {{
-                    getMinimumDR(
-                      monster.attackStyle,
-                      getMaxHit(getAttacks(monster, false, numberMultiplier, data)),
-                      monster.intimidation, data
-                    )
-                  }}
-                </td>
-              </tr>
+              <TableContent :monsters="slayerAreaMonsters" :data="data" :number-multiplier="numberMultiplier" />
             </tbody>
           </table>
         </div>
@@ -398,6 +290,7 @@ import { computed, onMounted, reactive, watch } from "vue";
 import { dungeons, monsters, slayerTiers, slayerAreas } from "./data";
 import { calculateMonsterMaxAttack, getAttacks, getIsIdleable, getMaxHit, getMinimumDR, getReducedMaxHit, getAutoEatThreshold } from "./utils";
 import { Data } from './types';
+import TableContent from "./components/TableContent.vue";
 
 
 onMounted(() => {
@@ -427,19 +320,19 @@ const data = reactive<Data>({
 const dungeonChoiceMonsters = computed(() =>
   dungeons
     .find((dungeon) => dungeon.name === data.dungeonChoice)
-    ?.monsters.map(getMonster)
+    ?.monsters.map(getMonster) ?? []
 );
 
 const slayerTierMonsters = computed(() =>
   slayerTiers
     .find((dungeon) => dungeon.name === data.slayerTier)
-    ?.monsters.map(getMonster)
+    ?.monsters.map(getMonster) ?? []
 );
 
 const slayerAreaMonsters = computed(() =>
   slayerAreas
     .find((dungeon) => dungeon.name === data.slayerArea)
-    ?.monsters.map(getMonster)
+    ?.monsters.map(getMonster) ?? []
 );
 
 function getMonster(monsterString: string) {
