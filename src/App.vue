@@ -278,10 +278,6 @@
         </div>
       </div>
     </div>
-    <footer class="text-center py-4 border-t border-[#272727] text-[#686868]">
-      Made by
-      <a class="hover:underline" href="https://www.martijndorsman.nl">Martijn Dorsman</a>
-    </footer>
   </div>
 </template>
 
