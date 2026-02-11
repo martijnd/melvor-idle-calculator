@@ -1,460 +1,273 @@
 <template>
-  <div class="flex flex-col min-h-screen text-white bg-dark">
-    <div class="relative flex-1 max-w-screen-lg px-4 py-4 mx-auto">
-      <h1 class="text-2xl font-bold text-center">Melvor Idle calculator</h1>
-      <hr class="my-4" />
-      <div class="sticky top-0 mb-1 bg-dark">
+  <div class="min-h-screen text-white bg-[radial-gradient(ellipse_at_top,var(--color-dark-light)_0%,var(--color-dark)_70%)]">
+    <div class="relative flex-1 max-w-4xl px-4 py-6 mx-auto sm:px-6 lg:px-8">
+      <!-- Header -->
+      <header class="mb-8 text-center">
+        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl bg-linear-to-r from-white to-muted-light bg-clip-text text-transparent">
+          Melvor Idle Calculator
+        </h1>
+        <p class="mt-2 text-sm text-muted">Damage reduction & idle threshold calculator</p>
+      </header>
+
+      <!-- Sticky controls panel -->
+      <div class="sticky top-0 z-10 mb-6 -mx-4 px-4 py-3 sm:-mx-6 sm:px-6 bg-dark/80 backdrop-blur-xl border-b border-border/50">
         <div v-if="data.inputsVisible">
-          <div
-            class="flex flex-col justify-center py-4 mt-4 gap-4 md:flex-row md:gap-4"
-          >
-            <div class="flex gap-4 md:w-1/2">
-              <label for="totalHealth" class="w-1/2">
-                <div class="mb-1 font-semibold">Total health</div>
-                <input
-                  id="totalHealth"
-                  class="w-full px-4 py-2 text-white rounded bg-dark-light"
-                  type="number"
-                  :step="data.mode === 'Normal' ? 10 : 100"
-                  min="0"
-                  v-model="data.totalHealth"
-                />
-              </label>
-              <label for="currentDR" class="w-1/2">
-                <div class="mb-1 font-semibold">Current DR (%)</div>
-                <input
-                  id="currentDR"
-                  class="w-full px-4 py-2 text-white rounded bg-dark-light"
-                  type="number"
-                  step="1"
-                  min="0"
-                  max="100"
-                  v-model="data.currentDR"
-                />
-              </label>
-            </div>
-            <div class="flex gap-4 md:w-1/2">
-              <label for="autoEatLevel" class="w-1/2">
-                <div class="mb-1 font-semibold">Auto Eat</div>
-                <select
-                  id="autoEatLevel"
-                  class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
-                  v-model="data.autoEatLevel"
-                >
-                  <option v-for="value of [1, 2, 3]" :value="value">
-                    Level {{ value }}
-                  </option>
-                </select>
-              </label>
-              <label for="combatStyle" class="w-1/2">
-                <div class="mb-1 font-semibold">Combat style</div>
-                <select
-                  id="combatStyle"
-                  class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
-                  v-model="data.combatStyle"
-                >
-                  <option
-                    v-for="value of ['Melee', 'Ranged', 'Magic']"
-                    :value="value"
-                  >
-                    {{ value }}
-                  </option>
-                </select>
-              </label>
-            </div>
-            <div class="flex gap-4 md:w-1/2">
-              <label for="wastefulRing" class="w-1/2">
-                <div class="mb-1 font-semibold">Wasteful ring</div>
-                <select
-                  id="wastefulRing"
-                  class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
-                  v-model="data.wastefulRing"
-                >
-                  <option v-for="value of ['Yes', 'No']" :value="value">
-                    {{ value }}
-                  </option>
-                </select>
-              </label>
-              <label for="guardianAmulet" class="w-1/2">
-                <div class="mb-1 font-semibold">Guardian am.</div>
-                <select
-                  id="guardianAmulet"
-                  class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
-                  v-model="data.guardianAmulet"
-                >
-                  <option v-for="value of ['Yes', 'No']" :value="value">
-                    {{ value }}
-                  </option>
-                </select>
-              </label>
-            </div>
-          </div>
-          <div
-            class="flex flex-col py-4 pt-0 gap-4 md:flex-row md:gap-4"
-          >
-            <div class="flex gap-4 md:w-1/2">
-              <label for="mode" class="w-1/2">
-                <div class="mb-1 font-semibold">Mode</div>
-                <select
-                  id="mode"
-                  class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
-                  v-model="data.mode"
-                >
-                  <option
-                    v-for="value of ['Normal', 'Adventure']"
-                    :value="value"
-                  >
-                    {{ value }}
-                  </option>
-                </select>
-              </label>
-              <label for="yakSynergy" class="w-1/2">
-                <div class="mb-1 font-semibold">Yak synergy</div>
-                <select
-                  id="yakSynergy"
-                  class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
-                  v-model="data.yakSynergy"
-                >
-                  <option
-                    v-for="value of ['None', 'Minotaur', 'Centaur', 'Witch']"
-                    :value="value"
-                  >
-                    {{ value }}
-                  </option>
-                </select>
-              </label>
-            </div>
-            <div class="flex gap-4 md:w-1/2">
-              <label for="stunDamage" class="w-1/2">
-                <div class="mb-1 font-semibold">Stun damage</div>
-                <select
-                  id="stunDamage"
-                  class="w-full h-10 px-4 py-2 text-white rounded bg-dark-light"
-                  v-model="data.stunDamage"
-                >
-                  <option v-for="value of ['Yes', 'No']" :value="value">
-                    {{ value }}
-                  </option>
-                </select>
-              </label>
-              <label for="slayerAreaNegation" class="w-1/2">
-                <div class="mb-1 font-semibold">Slayer area negation (%)</div>
-                <input
-                  id="slayerAreaNegation"
-                  class="w-full px-4 py-2 text-white rounded bg-dark-light"
-                  type="number"
-                  step="1"
-                  min="0"
-                  max="150"
-                  v-model="data.slayerAreaNegation"
-                />
-              </label>
-            </div>
+          <div class="grid grid-cols-2 gap-4 py-4 sm:grid-cols-5 sm:grid-rows-2">
+            <label class="block">
+              <span class="block mb-2 text-sm font-medium text-muted-light">Total Health</span>
+              <input
+                id="totalHealth"
+                class="w-full px-4 py-2.5 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
+                type="number"
+                :step="data.mode === 'Normal' ? 10 : 100"
+                min="0"
+                v-model="data.totalHealth"
+              />
+            </label>
+            <label class="block">
+              <span class="block mb-2 text-sm font-medium text-muted-light">Current DR (%)</span>
+              <input
+                id="currentDR"
+                class="w-full px-4 py-2.5 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
+                type="number"
+                step="1"
+                min="0"
+                max="100"
+                v-model="data.currentDR"
+              />
+            </label>
+            <label class="block">
+              <span class="block mb-2 text-sm font-medium text-muted-light">Auto Eat</span>
+              <select
+                id="autoEatLevel"
+                class="w-full h-11 px-4 py-2 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none cursor-pointer"
+                v-model="data.autoEatLevel"
+              >
+                <option v-for="value of [1, 2, 3]" :value="value">Level {{ value }}</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="block mb-2 text-sm font-medium text-muted-light">Combat Style</span>
+              <select
+                id="combatStyle"
+                class="w-full h-11 px-4 py-2 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none cursor-pointer"
+                v-model="data.combatStyle"
+              >
+                <option v-for="value of ['Melee', 'Ranged', 'Magic']" :value="value">{{ value }}</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="block mb-2 text-sm font-medium text-muted-light">Wasteful Ring</span>
+              <select
+                id="wastefulRing"
+                class="w-full h-11 px-4 py-2 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none cursor-pointer"
+                v-model="data.wastefulRing"
+              >
+                <option v-for="value of ['Yes', 'No']" :value="value">{{ value }}</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="block mb-2 text-sm font-medium text-muted-light">Guardian Am.</span>
+              <select
+                id="guardianAmulet"
+                class="w-full h-11 px-4 py-2 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none cursor-pointer"
+                v-model="data.guardianAmulet"
+              >
+                <option v-for="value of ['Yes', 'No']" :value="value">{{ value }}</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="block mb-2 text-sm font-medium text-muted-light">Mode</span>
+              <select
+                id="mode"
+                class="w-full h-11 px-4 py-2 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none cursor-pointer"
+                v-model="data.mode"
+              >
+                <option v-for="value of ['Normal', 'Adventure']" :value="value">{{ value }}</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="block mb-2 text-sm font-medium text-muted-light">Yak Synergy</span>
+              <select
+                id="yakSynergy"
+                class="w-full h-11 px-4 py-2 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none cursor-pointer"
+                v-model="data.yakSynergy"
+              >
+                <option v-for="value of ['None', 'Minotaur', 'Centaur', 'Witch']" :value="value">{{ value }}</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="block mb-2 text-sm font-medium text-muted-light">Stun Damage</span>
+              <select
+                id="stunDamage"
+                class="w-full h-11 px-4 py-2 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none cursor-pointer"
+                v-model="data.stunDamage"
+              >
+                <option v-for="value of ['Yes', 'No']" :value="value">{{ value }}</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="block mb-2 text-sm font-medium text-muted-light">Slayer Negation (%)</span>
+              <input
+                id="slayerAreaNegation"
+                class="w-full px-4 py-2.5 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
+                type="number"
+                step="1"
+                min="0"
+                max="150"
+                v-model="data.slayerAreaNegation"
+              />
+            </label>
           </div>
         </div>
-        <div
-          class="flex items-center justify-between py-2 text-sm italic text-center text-gray-300"
-        >
-          <span
-            >Auto Eat Threshold is
-            {{
-              Math.floor(getAutoEatThreshold(data) * data.totalHealth)
-            }}
-            HP</span
-          >
+        <div class="flex items-center justify-between py-2 border-t border-border/50">
+          <span class="text-sm text-muted">
+            Auto Eat Threshold: <span class="font-semibold text-success">{{ Math.floor(getAutoEatThreshold(data) * data.totalHealth) }} HP</span>
+          </span>
           <button
-            :class="`bottom-2 right-0 transform ${
-              data.inputsVisible ? 'rotate-180' : ''
-            }`"
+            :class="`p-2 rounded-lg transition-all hover:bg-dark-lighter ${data.inputsVisible ? 'rotate-180' : ''}`"
             @click="data.inputsVisible = !data.inputsVisible"
           >
-            <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.5"
-                d="M15.25 10.75L12 14.25L8.75 10.75"
-              ></path>
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" class="text-muted hover:text-white transition-colors">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.25 10.75L12 14.25L8.75 10.75" />
             </svg>
           </button>
         </div>
       </div>
-      <div class="rounded bg-dark-light">
-        <div id="tabs" class="flex">
+
+      <!-- Main content card -->
+      <div class="overflow-hidden rounded-2xl border border-border/50 bg-dark-light/50 backdrop-blur-sm shadow-xl shadow-black/20">
+        <!-- Tabs -->
+        <div class="flex border-b border-border/50 bg-dark-lighter/30">
           <button
-            :class="`tab border border-r-0 px-4 py-2 rounded-tl flex-1 hover:bg-dark-lighter ${
-              data.activeTab === 'monsters'
-                ? 'font-bold bg-dark'
-                : 'bg-dark-light'
-            }`"
-            @click="data.activeTab = 'monsters'"
+            v-for="tab in tabs"
+            :key="tab.id"
+            :class="[
+              'flex-1 px-4 py-3.5 text-sm font-medium transition-all',
+              data.activeTab === tab.id
+                ? 'text-accent border-b-2 border-accent bg-dark-light/50'
+                : 'text-muted hover:text-white hover:bg-dark-lighter/50'
+            ]"
+            @click="data.activeTab = tab.id"
           >
-            Monsters
-          </button>
-          <button
-            :class="`tab border px-4 py-2 border-r-0 flex-1 hover:bg-dark-lighter ${
-              data.activeTab === 'dungeons'
-                ? 'font-bold bg-dark'
-                : 'bg-dark-light'
-            }`"
-            @click="data.activeTab = 'dungeons'"
-          >
-            Dungeons
-          </button>
-          <button
-            :class="`tab border px-4 py-2 border-r-0 flex-1 hover:bg-dark-lighter ${
-              data.activeTab === 'slayerAreas'
-                ? 'font-bold bg-dark'
-                : 'bg-dark-light'
-            }`"
-            @click="data.activeTab = 'slayerAreas'"
-          >
-            Slayer areas
-          </button>
-          <button
-            :class="`tab border px-4 py-2 rounded-tr flex-1 hover:bg-dark-lighter ${
-              data.activeTab === 'slayer'
-                ? 'font-bold bg-dark'
-                : 'bg-dark-light'
-            }`"
-            @click="data.activeTab = 'slayer'"
-          >
-            Slayer
+            {{ tab.label }}
           </button>
         </div>
-        <div class="p-4" v-if="data.activeTab === 'monsters'">
-          <div class="flex items-center justify-between my-4">
-            <h2 class="text-xl font-semibold">Monsters</h2>
+
+        <!-- Tab panels -->
+        <div class="p-4 sm:p-6">
+          <div v-if="data.activeTab === 'monsters'" class="space-y-4">
+            <h2 class="text-lg font-semibold">Monsters</h2>
+            <div class="overflow-x-auto rounded-xl border border-border/50">
+              <table class="w-full">
+                <thead>
+                  <tr class="border-b border-border/50 bg-dark-lighter/30">
+                    <th class="px-4 py-3 text-left text-sm font-medium text-muted">Name</th>
+                    <th class="hidden px-4 py-3 text-left text-sm font-medium text-muted md:table-cell">Attack style</th>
+                    <th class="hidden px-4 py-3 text-right text-sm font-medium text-muted tabular-nums md:table-cell">Max hit</th>
+                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">Reduced Max hit</th>
+                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">DR needed</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <TableContent :monsters="monsters" :data="data" :number-multiplier="numberMultiplier" />
+                </tbody>
+              </table>
+            </div>
           </div>
-          <table class="w-full">
-            <thead>
-              <tr>
-                <th class="px-4 py-2 text-left">Name</th>
-                <th class="hidden px-4 py-2 text-left md:table-cell">
-                  Attack style
-                </th>
-                <th
-                  class="hidden px-4 py-2 text-right tabular-nums md:table-cell"
-                >
-                  Max hit
-                </th>
-                <th class="px-4 py-2 text-right tabular-nums">
-                  Reduced Max hit
-                </th>
-                <th class="px-4 py-2 text-right tabular-nums">DR needed</th>
-              </tr>
-            </thead>
-            <tbody>
-              <TableContent
-                :monsters="monsters"
-                :data="data"
-                :number-multiplier="numberMultiplier"
-              />
-            </tbody>
-          </table>
-        </div>
-        <div class="p-4" v-if="data.activeTab === 'dungeons'">
-          <div class="flex items-center justify-between my-4">
-            <h2 class="text-xl font-semibold">
-              Dungeons
-              <svg
-                v-if="canIdleDungeon"
-                class="inline text-[#1a7c43]"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24"
+
+          <div v-if="data.activeTab === 'dungeons'" class="space-y-4">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <h2 class="flex items-center gap-2 text-lg font-semibold">
+                Dungeons
+                <IdleStatusIcon :idleable="canIdleDungeon" />
+              </h2>
+              <select
+                id="dungeon"
+                class="px-4 py-2.5 text-white rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:outline-none cursor-pointer max-w-xs"
+                v-model="data.dungeonChoice"
               >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M5.75 12.8665L8.33995 16.4138C9.15171 17.5256 10.8179 17.504 11.6006 16.3715L18.25 6.75"
-                />
-              </svg>
-              <svg
-                v-else
-                class="inline text-[#6b2727]"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M17.25 6.75L6.75 17.25"
-                ></path>
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M6.75 6.75L17.25 17.25"
-                ></path>
-              </svg>
-            </h2>
-            <select
-              id="dungeon"
-              class="text-white px-4 py-2 rounded bg-[#474747]"
-              v-model="data.dungeonChoice"
-            >
-              <option v-for="dungeon of dungeons" :value="dungeon.name">
-                {{ dungeon.name }}
-              </option>
-            </select>
+                <option v-for="dungeon of dungeons" :value="dungeon.name">{{ dungeon.name }}</option>
+              </select>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-border/50">
+              <table class="w-full">
+                <thead>
+                  <tr class="border-b border-border/50 bg-dark-lighter/30">
+                    <th class="px-4 py-3 text-left text-sm font-medium text-muted">Name</th>
+                    <th class="hidden px-4 py-3 text-left text-sm font-medium text-muted md:table-cell">Attack style</th>
+                    <th class="hidden px-4 py-3 text-right text-sm font-medium text-muted tabular-nums md:table-cell">Max hit</th>
+                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">Reduced Max hit</th>
+                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">DR needed (%)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <TableContent :monsters="dungeonChoiceMonsters" :data="data" :number-multiplier="numberMultiplier" />
+                </tbody>
+              </table>
+            </div>
           </div>
-          <table class="w-full">
-            <thead>
-              <tr>
-                <th class="px-4 py-2 text-left">Name</th>
-                <th class="hidden px-4 py-2 text-left md:table-cell">
-                  Attack style
-                </th>
-                <th
-                  class="hidden px-4 py-2 text-right tabular-nums md:table-cell"
-                >
-                  Max hit
-                </th>
-                <th class="px-4 py-2 text-right tabular-nums">
-                  Reduced Max hit
-                </th>
-                <th class="px-4 py-2 text-right tabular-nums">DR needed (%)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <TableContent
-                :monsters="dungeonChoiceMonsters"
-                :data="data"
-                :number-multiplier="numberMultiplier"
-              />
-            </tbody>
-          </table>
-        </div>
-        <div class="p-4" v-if="data.activeTab === 'slayer'">
-          <div class="flex items-center justify-between my-4">
-            <h2 class="text-xl font-semibold">
-              Slayer
-              <svg
-                v-if="canIdleSlayerTier"
-                class="inline text-[#1a7c43]"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24"
+
+          <div v-if="data.activeTab === 'slayer'" class="space-y-4">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <h2 class="flex items-center gap-2 text-lg font-semibold">
+                Slayer
+                <IdleStatusIcon :idleable="canIdleSlayerTier" />
+              </h2>
+              <select
+                id="slayer"
+                class="px-4 py-2.5 text-white rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:outline-none cursor-pointer max-w-xs"
+                v-model="data.slayerTier"
               >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M5.75 12.8665L8.33995 16.4138C9.15171 17.5256 10.8179 17.504 11.6006 16.3715L18.25 6.75"
-                />
-              </svg>
-              <svg
-                v-else
-                class="inline text-[#6b2727]"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24"
+                <option v-for="tier of slayerTiers" :value="tier.name">{{ tier.name }}</option>
+              </select>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-border/50">
+              <table class="w-full">
+                <thead>
+                  <tr class="border-b border-border/50 bg-dark-lighter/30">
+                    <th class="px-4 py-3 text-left text-sm font-medium text-muted">Name</th>
+                    <th class="hidden px-4 py-3 text-left text-sm font-medium text-muted md:table-cell">Attack style</th>
+                    <th class="hidden px-4 py-3 text-right text-sm font-medium text-muted tabular-nums md:table-cell">Max hit</th>
+                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">Reduced Max hit</th>
+                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">DR needed (%)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <TableContent :monsters="slayerTierMonsters" :data="data" :number-multiplier="numberMultiplier" />
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div v-if="data.activeTab === 'slayerAreas'" class="space-y-4">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <h2 class="text-lg font-semibold">Slayer Areas</h2>
+              <select
+                id="slayerAreas"
+                class="px-4 py-2.5 text-white rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:outline-none cursor-pointer max-w-xs"
+                v-model="data.slayerArea"
               >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M17.25 6.75L6.75 17.25"
-                ></path>
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M6.75 6.75L17.25 17.25"
-                ></path>
-              </svg>
-            </h2>
-            <select
-              id="slayer"
-              class="text-white px-4 py-2 rounded bg-[#474747]"
-              v-model="data.slayerTier"
-            >
-              <option v-for="tier of slayerTiers" :value="tier.name">
-                {{ tier.name }}
-              </option>
-            </select>
+                <option v-for="area of slayerAreas" :value="area.name">{{ area.name }}</option>
+              </select>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-border/50">
+              <table class="w-full">
+                <thead>
+                  <tr class="border-b border-border/50 bg-dark-lighter/30">
+                    <th class="px-4 py-3 text-left text-sm font-medium text-muted">Name</th>
+                    <th class="hidden px-4 py-3 text-left text-sm font-medium text-muted md:table-cell">Attack style</th>
+                    <th class="hidden px-4 py-3 text-right text-sm font-medium text-muted tabular-nums md:table-cell">Max hit</th>
+                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">Reduced Max hit</th>
+                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">DR needed (%)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <TableContent :monsters="slayerAreaMonsters" :data="data" :number-multiplier="numberMultiplier" />
+                </tbody>
+              </table>
+            </div>
           </div>
-          <table class="w-full">
-            <thead>
-              <tr>
-                <th class="px-4 py-2 text-left">Name</th>
-                <th class="hidden px-4 py-2 text-left md:table-cell">
-                  Attack style
-                </th>
-                <th
-                  class="hidden px-4 py-2 text-right tabular-nums md:table-cell"
-                >
-                  Max hit
-                </th>
-                <th class="px-4 py-2 text-right tabular-nums">
-                  Reduced Max hit
-                </th>
-                <th class="px-4 py-2 text-right tabular-nums">DR needed (%)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <TableContent
-                :monsters="slayerTierMonsters"
-                :data="data"
-                :number-multiplier="numberMultiplier"
-              />
-            </tbody>
-          </table>
-        </div>
-        <div class="p-4" v-if="data.activeTab === 'slayerAreas'">
-          <div class="flex items-center justify-between my-4">
-            <h2 class="text-xl font-semibold">Slayer areas</h2>
-            <select
-              id="slayerAreas"
-              class="text-white px-4 py-2 rounded bg-[#474747]"
-              v-model="data.slayerArea"
-            >
-              <option v-for="area of slayerAreas" :value="area.name">
-                {{ area.name }}
-              </option>
-            </select>
-          </div>
-          <table class="w-full">
-            <thead>
-              <tr>
-                <th class="px-4 py-2 text-left">Name</th>
-                <th class="hidden px-4 py-2 text-left md:table-cell">
-                  Attack style
-                </th>
-                <th
-                  class="hidden px-4 py-2 text-right tabular-nums md:table-cell"
-                >
-                  Max hit
-                </th>
-                <th class="px-4 py-2 text-right tabular-nums">
-                  Reduced Max hit
-                </th>
-                <th class="px-4 py-2 text-right tabular-nums">DR needed (%)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <TableContent
-                :monsters="slayerAreaMonsters"
-                :data="data"
-                :number-multiplier="numberMultiplier"
-              />
-            </tbody>
-          </table>
         </div>
       </div>
     </div>
@@ -465,7 +278,6 @@
 import { computed, onMounted, reactive, watch } from "vue";
 import { dungeons, monsters, slayerTiers, slayerAreas } from "./data";
 import {
-  calculateMonsterMaxAttack,
   getAttacks,
   getIsIdleable,
   getMaxHit,
@@ -475,6 +287,14 @@ import {
 } from "./utils";
 import { Data } from "./types";
 import TableContent from "./components/TableContent.vue";
+import IdleStatusIcon from "./components/IdleStatusIcon.vue";
+
+const tabs = [
+  { id: "monsters" as const, label: "Monsters" },
+  { id: "dungeons" as const, label: "Dungeons" },
+  { id: "slayerAreas" as const, label: "Slayer Areas" },
+  { id: "slayer" as const, label: "Slayer" },
+];
 
 onMounted(() => {
   if (localStorage["data"]) {
@@ -528,59 +348,30 @@ function getMonster(monsterString: string) {
 }
 
 const canIdleDungeon = computed(() => {
-  if (!dungeonChoiceMonsters.value) {
-    return false;
-  }
-
+  if (!dungeonChoiceMonsters.value) return false;
   return dungeonChoiceMonsters.value.every((monster) =>
     getIsIdleable(
-      getReducedMaxHit(
-        getAttacks(monster, false, numberMultiplier.value, data),
-      ),
+      getReducedMaxHit(getAttacks(monster, false, numberMultiplier.value, data)),
       data,
     ),
   );
 });
 
 const canIdleSlayerTier = computed(() => {
-  if (!slayerTierMonsters.value) {
-    return false;
-  }
-
+  if (!slayerTierMonsters.value) return false;
   return slayerTierMonsters.value.every((monster) =>
     getIsIdleable(
-      getReducedMaxHit(
-        getAttacks(monster, false, numberMultiplier.value, data),
-      ),
+      getReducedMaxHit(getAttacks(monster, false, numberMultiplier.value, data)),
       data,
     ),
   );
 });
 
-const numberMultiplier = computed(() => {
-  if (data.mode === "Adventure") {
-    return 100;
-  }
-  return 10;
-});
+const numberMultiplier = computed(() =>
+  data.mode === "Adventure" ? 100 : 10,
+);
 
 watch(data, (data) => {
   localStorage["data"] = JSON.stringify(data);
 });
-
-// watch(() => data.mode, (mode) => {
-//   if (mode === 'Adventure') {
-//     data.totalHealth = data.totalHealth * 10;
-//   } else {
-//     data.totalHealth = data.totalHealth / 10;
-//   }
-// })
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-</style>

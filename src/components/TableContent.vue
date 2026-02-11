@@ -1,35 +1,37 @@
 <template>
   <tr
     v-for="monster of monsters"
-    :class="
+    :class="[
+      'transition-colors border-b border-border/30 last:border-b-0',
       getIsIdleable(
         getReducedMaxHit(getAttacks(monster, false, numberMultiplier, data)),
         data,
       )
-        ? `bg-[#1a7c43]`
-        : `bg-[#6b2727]`
-    "
+        ? 'bg-success-dim/50 hover:bg-success-dim'
+        : 'bg-danger-dim/50 hover:bg-danger-dim'
+    ]"
   >
-    <td class="px-4 py-2">
+    <td class="px-4 py-3">
       <a
-        class="hover:underline"
+        class="font-medium text-red-50 hover:text-accent/80 hover:underline transition-colors"
         :href="`https://wiki.melvoridle.com/w/${monster.name}`"
         target="_blank"
+        rel="noopener noreferrer"
         >{{ monster.name }}</a
       >
     </td>
-    <td class="hidden px-4 py-2 md:table-cell">
+    <td class="hidden px-4 py-3 text-muted md:table-cell">
       {{ monster.attackStyle }}
     </td>
-    <td class="hidden px-4 py-2 text-right tabular-nums md:table-cell">
+    <td class="hidden px-4 py-3 text-right tabular-nums text-muted-light md:table-cell">
       {{ getMaxHit(getAttacks(monster, false, numberMultiplier, data)) }}
     </td>
-    <td class="px-4 py-2 text-right tabular-nums">
+    <td class="px-4 py-3 text-right tabular-nums text-muted-light">
       ({{
         getReducedMaxHit(getAttacks(monster, false, numberMultiplier, data))
       }})
     </td>
-    <td class="px-4 py-2 text-right tabular-nums">
+    <td class="px-4 py-3 text-right tabular-nums font-medium">
       {{
         getMinimumDR(
           monster.attackStyle,
