@@ -17,7 +17,7 @@
 
       <!-- Sticky controls panel -->
       <div
-        class="sticky top-0 z-10 mb-6 -mx-4 px-4 py-3 sm:-mx-6 sm:px-6 bg-dark/80 backdrop-blur-xl border-b border-border/50"
+        class="sticky top-0 z-10 mb-6 -mx-4 px-4 pt-3 pb-1 sm:-mx-6 sm:px-6 rounded-xl bg-dark/80 backdrop-blur-xl border border-border/50"
       >
         <div v-if="data.inputsVisible">
           <div
@@ -228,7 +228,7 @@
           </div>
         </div>
         <div
-          class="flex items-center justify-between py-2 border-t border-border/50"
+          class="flex items-center justify-between pt-2 pb-1 border-t border-border/50"
         >
           <span class="text-sm text-muted">
             Auto Eat Threshold:
