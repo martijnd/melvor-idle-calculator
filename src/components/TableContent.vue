@@ -8,7 +8,7 @@
         data,
       )
         ? 'bg-success-dim/50 hover:bg-success-dim'
-        : 'bg-danger-dim/50 hover:bg-danger-dim'
+        : 'bg-danger-dim/50 hover:bg-danger-dim',
     ]"
   >
     <td class="px-4 py-3">
@@ -23,7 +23,9 @@
     <td class="hidden px-4 py-3 text-muted md:table-cell">
       {{ monster.attackStyle }}
     </td>
-    <td class="hidden px-4 py-3 text-right tabular-nums text-muted-light md:table-cell">
+    <td
+      class="hidden px-4 py-3 text-right tabular-nums text-muted-light md:table-cell"
+    >
       {{ getMaxHit(getAttacks(monster, false, numberMultiplier, data)) }}
     </td>
     <td class="px-4 py-3 text-right tabular-nums text-muted-light">

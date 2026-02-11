@@ -1,5 +1,23 @@
 import { Monster } from "../data";
-import { Attack, AttackStyle, CalculatedAttack, Data } from "../types";
+import { Attack, AttackStyle, CalculatedAttack, Data, ExpansionId } from "../types";
+
+/** Expansion required by a monster, derived from its game id (e.g. melvorTotH:Name) */
+export function getMonsterExpansion(monster: Monster): ExpansionId | null {
+  const id = monster.id;
+  if (id.startsWith("melvorTotH:")) return "totH";
+  if (id.startsWith("melvorAoD:")) return "aoD";
+  return null; // melvorD, melvorF = base game
+}
+
+/** Returns true if the user owns the expansion required by this monster */
+export function monsterMatchesOwnedExpansions(
+  monster: Monster,
+  ownedExpansions: Data["ownedExpansions"]
+): boolean {
+  const expansion = getMonsterExpansion(monster);
+  if (!expansion) return true; // base game
+  return ownedExpansions[expansion];
+}
 
 export function getCombatMultiplier(
   mode: "Normal" | "Adventure",

@@ -38,6 +38,7 @@ function createBaseData(overrides: Partial<Data> = {}): Data {
     dungeonChoice: dungeons[0].name,
     activeTab: "monsters",
     inputsVisible: true,
+    ownedExpansions: { totH: true, aoD: true },
     ...overrides,
   };
 }
@@ -119,7 +120,7 @@ describe("getMaximumNormalAttack", () => {
     const lowLevel = createMeleeMonster({ attackLevel: 1, attackBonus: 0 });
     const highLevel = createMeleeMonster({ attackLevel: 100, attackBonus: 0 });
     expect(getMaximumNormalAttack(highLevel, 1)).toBeGreaterThan(
-      getMaximumNormalAttack(lowLevel, 1)
+      getMaximumNormalAttack(lowLevel, 1),
     );
   });
 
@@ -158,7 +159,11 @@ describe("getMultiplier", () => {
   });
 
   it("returns 1.2 for sleepable monster in non-Foggy Lake area", () => {
-    const monster = createMeleeMonster({ canStun: false, canSleep: true, areas: ["Miolite Caves"] });
+    const monster = createMeleeMonster({
+      canStun: false,
+      canSleep: true,
+      areas: ["Miolite Caves"],
+    });
     const data = createBaseData({ stunDamage: "Yes" });
     expect(getMultiplier(monster, data)).toBe(1.2);
   });
@@ -268,7 +273,10 @@ describe("getMaxHit", () => {
   });
 
   it("returns max hit from attacks", () => {
-    const createAttack = (maxHit: number, reducedMaxHit: number): CalculatedAttack =>
+    const createAttack = (
+      maxHit: number,
+      reducedMaxHit: number,
+    ): CalculatedAttack =>
       ({
         name: "Test",
         maxHit,
@@ -293,7 +301,10 @@ describe("getReducedMaxHit", () => {
   });
 
   it("returns max reducedMaxHit from attacks", () => {
-    const createAttack = (maxHit: number, reducedMaxHit: number): CalculatedAttack =>
+    const createAttack = (
+      maxHit: number,
+      reducedMaxHit: number,
+    ): CalculatedAttack =>
       ({
         name: "Test",
         maxHit,
@@ -381,7 +392,10 @@ describe("getMinimumHP", () => {
 
 describe("getAttacks", () => {
   it("returns normal attack for monster with usesNormalHit", () => {
-    const monster = createMeleeMonster({ usesNormalHit: true, specialAttack: [] });
+    const monster = createMeleeMonster({
+      usesNormalHit: true,
+      specialAttack: [],
+    });
     const data = createBaseData();
     const attacks = getAttacks(monster, false, 1, data);
     expect(attacks.length).toBeGreaterThanOrEqual(1);

@@ -1,5 +1,12 @@
 import { dungeons, slayerAreas } from "../data";
 
+export type ExpansionId = "totH" | "aoD";
+
+export type OwnedExpansions = {
+  totH: boolean;
+  aoD: boolean;
+};
+
 export type CalculatedAttack = {
   minimumDR: number;
   minimumHP: number;
@@ -46,4 +53,5 @@ export interface Data {
   dungeonChoice: (typeof dungeons)[number]["name"];
   activeTab: "monsters" | "dungeons" | "slayer" | "slayerAreas";
   inputsVisible: boolean;
+  ownedExpansions: OwnedExpansions;
 }

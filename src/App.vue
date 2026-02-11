@@ -1,20 +1,32 @@
 <template>
-  <div class="min-h-screen text-white bg-[radial-gradient(ellipse_at_top,var(--color-dark-light)_0%,var(--color-dark)_70%)]">
+  <div
+    class="min-h-screen text-white bg-[radial-gradient(ellipse_at_top,var(--color-dark-light)_0%,var(--color-dark)_70%)]"
+  >
     <div class="relative flex-1 max-w-4xl px-4 py-6 mx-auto sm:px-6 lg:px-8">
       <!-- Header -->
       <header class="mb-8 text-center">
-        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl bg-linear-to-r from-white to-muted-light bg-clip-text text-transparent">
+        <h1
+          class="text-3xl font-bold tracking-tight sm:text-4xl bg-linear-to-r from-white to-muted-light bg-clip-text text-transparent"
+        >
           Melvor Idle Calculator
         </h1>
-        <p class="mt-2 text-sm text-muted">Damage reduction & idle threshold calculator</p>
+        <p class="mt-2 text-sm text-muted">
+          Damage reduction & idle threshold calculator
+        </p>
       </header>
 
       <!-- Sticky controls panel -->
-      <div class="sticky top-0 z-10 mb-6 -mx-4 px-4 py-3 sm:-mx-6 sm:px-6 bg-dark/80 backdrop-blur-xl border-b border-border/50">
+      <div
+        class="sticky top-0 z-10 mb-6 -mx-4 px-4 py-3 sm:-mx-6 sm:px-6 bg-dark/80 backdrop-blur-xl border-b border-border/50"
+      >
         <div v-if="data.inputsVisible">
-          <div class="grid grid-cols-2 gap-4 py-4 sm:grid-cols-5 sm:grid-rows-2">
+          <div
+            class="grid grid-cols-2 gap-4 py-4 sm:grid-cols-5 sm:grid-rows-2"
+          >
             <label class="block">
-              <span class="block mb-2 text-sm font-medium text-muted-light">Total Health</span>
+              <span class="block mb-2 text-sm font-medium text-muted-light"
+                >Total Health</span
+              >
               <input
                 id="totalHealth"
                 class="w-full px-4 py-2.5 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
@@ -25,7 +37,9 @@
               />
             </label>
             <label class="block">
-              <span class="block mb-2 text-sm font-medium text-muted-light">Current DR (%)</span>
+              <span class="block mb-2 text-sm font-medium text-muted-light"
+                >Current DR (%)</span
+              >
               <input
                 id="currentDR"
                 class="w-full px-4 py-2.5 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
@@ -37,77 +51,113 @@
               />
             </label>
             <label class="block">
-              <span class="block mb-2 text-sm font-medium text-muted-light">Auto Eat</span>
+              <span class="block mb-2 text-sm font-medium text-muted-light"
+                >Auto Eat</span
+              >
               <select
                 id="autoEatLevel"
                 class="w-full h-11 px-4 py-2 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none cursor-pointer"
                 v-model="data.autoEatLevel"
               >
-                <option v-for="value of [1, 2, 3]" :value="value">Level {{ value }}</option>
+                <option v-for="value of [1, 2, 3]" :value="value">
+                  Level {{ value }}
+                </option>
               </select>
             </label>
             <label class="block">
-              <span class="block mb-2 text-sm font-medium text-muted-light">Combat Style</span>
+              <span class="block mb-2 text-sm font-medium text-muted-light"
+                >Combat Style</span
+              >
               <select
                 id="combatStyle"
                 class="w-full h-11 px-4 py-2 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none cursor-pointer"
                 v-model="data.combatStyle"
               >
-                <option v-for="value of ['Melee', 'Ranged', 'Magic']" :value="value">{{ value }}</option>
+                <option
+                  v-for="value of ['Melee', 'Ranged', 'Magic']"
+                  :value="value"
+                >
+                  {{ value }}
+                </option>
               </select>
             </label>
             <label class="block">
-              <span class="block mb-2 text-sm font-medium text-muted-light">Wasteful Ring</span>
+              <span class="block mb-2 text-sm font-medium text-muted-light"
+                >Wasteful Ring</span
+              >
               <select
                 id="wastefulRing"
                 class="w-full h-11 px-4 py-2 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none cursor-pointer"
                 v-model="data.wastefulRing"
               >
-                <option v-for="value of ['Yes', 'No']" :value="value">{{ value }}</option>
+                <option v-for="value of ['Yes', 'No']" :value="value">
+                  {{ value }}
+                </option>
               </select>
             </label>
             <label class="block">
-              <span class="block mb-2 text-sm font-medium text-muted-light">Guardian Am.</span>
+              <span class="block mb-2 text-sm font-medium text-muted-light"
+                >Guardian Am.</span
+              >
               <select
                 id="guardianAmulet"
                 class="w-full h-11 px-4 py-2 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none cursor-pointer"
                 v-model="data.guardianAmulet"
               >
-                <option v-for="value of ['Yes', 'No']" :value="value">{{ value }}</option>
+                <option v-for="value of ['Yes', 'No']" :value="value">
+                  {{ value }}
+                </option>
               </select>
             </label>
             <label class="block">
-              <span class="block mb-2 text-sm font-medium text-muted-light">Mode</span>
+              <span class="block mb-2 text-sm font-medium text-muted-light"
+                >Mode</span
+              >
               <select
                 id="mode"
                 class="w-full h-11 px-4 py-2 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none cursor-pointer"
                 v-model="data.mode"
               >
-                <option v-for="value of ['Normal', 'Adventure']" :value="value">{{ value }}</option>
+                <option v-for="value of ['Normal', 'Adventure']" :value="value">
+                  {{ value }}
+                </option>
               </select>
             </label>
             <label class="block">
-              <span class="block mb-2 text-sm font-medium text-muted-light">Yak Synergy</span>
+              <span class="block mb-2 text-sm font-medium text-muted-light"
+                >Yak Synergy</span
+              >
               <select
                 id="yakSynergy"
                 class="w-full h-11 px-4 py-2 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none cursor-pointer"
                 v-model="data.yakSynergy"
               >
-                <option v-for="value of ['None', 'Minotaur', 'Centaur', 'Witch']" :value="value">{{ value }}</option>
+                <option
+                  v-for="value of ['None', 'Minotaur', 'Centaur', 'Witch']"
+                  :value="value"
+                >
+                  {{ value }}
+                </option>
               </select>
             </label>
             <label class="block">
-              <span class="block mb-2 text-sm font-medium text-muted-light">Stun Damage</span>
+              <span class="block mb-2 text-sm font-medium text-muted-light"
+                >Stun Damage</span
+              >
               <select
                 id="stunDamage"
                 class="w-full h-11 px-4 py-2 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none cursor-pointer"
                 v-model="data.stunDamage"
               >
-                <option v-for="value of ['Yes', 'No']" :value="value">{{ value }}</option>
+                <option v-for="value of ['Yes', 'No']" :value="value">
+                  {{ value }}
+                </option>
               </select>
             </label>
             <label class="block">
-              <span class="block mb-2 text-sm font-medium text-muted-light">Slayer Negation (%)</span>
+              <span class="block mb-2 text-sm font-medium text-muted-light"
+                >Slayer Negation (%)</span
+              >
               <input
                 id="slayerAreaNegation"
                 class="w-full px-4 py-2.5 text-white transition-all rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
@@ -118,25 +168,104 @@
                 v-model="data.slayerAreaNegation"
               />
             </label>
+            <div class="flex flex-col gap-2 sm:col-span-2">
+              <span class="block text-sm font-medium text-muted-light"
+                >Owned Expansions</span
+              >
+              <div class="flex gap-3 flex-nowrap">
+                <button
+                  type="button"
+                  role="checkbox"
+                  :aria-checked="data.ownedExpansions.totH"
+                  :class="[
+                    'flex items-center gap-2.5 px-4 py-2.5 rounded-xl border transition-all duration-200',
+                    data.ownedExpansions.totH
+                      ? 'bg-expansion-toth-dim border-expansion-toth/50 text-white shadow-sm'
+                      : 'bg-dark-lighter/60 border-border/60 text-muted hover:border-border hover:text-muted-light',
+                  ]"
+                  @click="
+                    data.ownedExpansions.totH = !data.ownedExpansions.totH
+                  "
+                >
+                  <span
+                    :class="[
+                      'w-2.5 h-2.5 rounded-full shrink-0 transition-colors',
+                      data.ownedExpansions.totH
+                        ? 'bg-expansion-toth'
+                        : 'bg-border',
+                    ]"
+                  />
+                  <span class="text-sm font-medium whitespace-nowrap"
+                    >Throne of the Herald</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  role="checkbox"
+                  :aria-checked="data.ownedExpansions.aoD"
+                  :class="[
+                    'flex items-center gap-2.5 px-4 py-2.5 rounded-xl border transition-all duration-200',
+                    data.ownedExpansions.aoD
+                      ? 'bg-expansion-aod-dim border-expansion-aod/50 text-white shadow-sm'
+                      : 'bg-dark-lighter/60 border-border/60 text-muted hover:border-border hover:text-muted-light',
+                  ]"
+                  @click="data.ownedExpansions.aoD = !data.ownedExpansions.aoD"
+                >
+                  <span
+                    :class="[
+                      'w-2.5 h-2.5 rounded-full shrink-0 transition-colors',
+                      data.ownedExpansions.aoD
+                        ? 'bg-expansion-aod'
+                        : 'bg-border',
+                    ]"
+                  />
+                  <span class="text-sm font-medium whitespace-nowrap"
+                    >Atlas of Discovery</span
+                  >
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="flex items-center justify-between py-2 border-t border-border/50">
+        <div
+          class="flex items-center justify-between py-2 border-t border-border/50"
+        >
           <span class="text-sm text-muted">
-            Auto Eat Threshold: <span class="font-semibold text-success">{{ Math.floor(getAutoEatThreshold(data) * data.totalHealth) }} HP</span>
+            Auto Eat Threshold:
+            <span class="font-semibold text-success"
+              >{{
+                Math.floor(getAutoEatThreshold(data) * data.totalHealth)
+              }}
+              HP</span
+            >
           </span>
           <button
             :class="`p-2 rounded-lg transition-all hover:bg-dark-lighter ${data.inputsVisible ? 'rotate-180' : ''}`"
             @click="data.inputsVisible = !data.inputsVisible"
           >
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" class="text-muted hover:text-white transition-colors">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.25 10.75L12 14.25L8.75 10.75" />
+            <svg
+              width="24"
+              height="24"
+              fill="none"
+              viewBox="0 0 24 24"
+              class="text-muted hover:text-white transition-colors"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15.25 10.75L12 14.25L8.75 10.75"
+              />
             </svg>
           </button>
         </div>
       </div>
 
       <!-- Main content card -->
-      <div class="overflow-hidden rounded-2xl border border-border/50 bg-dark-light/50 backdrop-blur-sm shadow-xl shadow-black/20">
+      <div
+        class="overflow-hidden rounded-2xl border border-border/50 bg-dark-light/50 backdrop-blur-sm shadow-xl shadow-black/20"
+      >
         <!-- Tabs -->
         <div class="flex border-b border-border/50 bg-dark-lighter/30">
           <button
@@ -146,7 +275,7 @@
               'flex-1 px-4 py-3.5 text-sm font-medium transition-all',
               data.activeTab === tab.id
                 ? 'text-accent border-b-2 border-accent bg-dark-light/50'
-                : 'text-muted hover:text-white hover:bg-dark-lighter/50'
+                : 'text-muted hover:text-white hover:bg-dark-lighter/50',
             ]"
             @click="data.activeTab = tab.id"
           >
@@ -162,22 +291,48 @@
               <table class="w-full">
                 <thead>
                   <tr class="border-b border-border/50 bg-dark-lighter/30">
-                    <th class="px-4 py-3 text-left text-sm font-medium text-muted">Name</th>
-                    <th class="hidden px-4 py-3 text-left text-sm font-medium text-muted md:table-cell">Attack style</th>
-                    <th class="hidden px-4 py-3 text-right text-sm font-medium text-muted tabular-nums md:table-cell">Max hit</th>
-                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">Reduced Max hit</th>
-                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">DR needed</th>
+                    <th
+                      class="px-4 py-3 text-left text-sm font-medium text-muted"
+                    >
+                      Name
+                    </th>
+                    <th
+                      class="hidden px-4 py-3 text-left text-sm font-medium text-muted md:table-cell"
+                    >
+                      Attack style
+                    </th>
+                    <th
+                      class="hidden px-4 py-3 text-right text-sm font-medium text-muted tabular-nums md:table-cell"
+                    >
+                      Max hit
+                    </th>
+                    <th
+                      class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums"
+                    >
+                      Reduced Max hit
+                    </th>
+                    <th
+                      class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums"
+                    >
+                      DR needed
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <TableContent :monsters="monsters" :data="data" :number-multiplier="numberMultiplier" />
+                  <TableContent
+                    :monsters="filteredMonsters"
+                    :data="data"
+                    :number-multiplier="numberMultiplier"
+                  />
                 </tbody>
               </table>
             </div>
           </div>
 
           <div v-if="data.activeTab === 'dungeons'" class="space-y-4">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div
+              class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+            >
               <h2 class="flex items-center gap-2 text-lg font-semibold">
                 Dungeons
                 <IdleStatusIcon :idleable="canIdleDungeon" />
@@ -187,29 +342,60 @@
                 class="px-4 py-2.5 text-white rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:outline-none cursor-pointer max-w-xs"
                 v-model="data.dungeonChoice"
               >
-                <option v-for="dungeon of dungeons" :value="dungeon.name">{{ dungeon.name }}</option>
+                <option
+                  v-for="dungeon of filteredDungeons"
+                  :value="dungeon.name"
+                >
+                  {{ dungeon.name }}
+                </option>
               </select>
             </div>
             <div class="overflow-x-auto rounded-xl border border-border/50">
               <table class="w-full">
                 <thead>
                   <tr class="border-b border-border/50 bg-dark-lighter/30">
-                    <th class="px-4 py-3 text-left text-sm font-medium text-muted">Name</th>
-                    <th class="hidden px-4 py-3 text-left text-sm font-medium text-muted md:table-cell">Attack style</th>
-                    <th class="hidden px-4 py-3 text-right text-sm font-medium text-muted tabular-nums md:table-cell">Max hit</th>
-                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">Reduced Max hit</th>
-                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">DR needed (%)</th>
+                    <th
+                      class="px-4 py-3 text-left text-sm font-medium text-muted"
+                    >
+                      Name
+                    </th>
+                    <th
+                      class="hidden px-4 py-3 text-left text-sm font-medium text-muted md:table-cell"
+                    >
+                      Attack style
+                    </th>
+                    <th
+                      class="hidden px-4 py-3 text-right text-sm font-medium text-muted tabular-nums md:table-cell"
+                    >
+                      Max hit
+                    </th>
+                    <th
+                      class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums"
+                    >
+                      Reduced Max hit
+                    </th>
+                    <th
+                      class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums"
+                    >
+                      DR needed (%)
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <TableContent :monsters="dungeonChoiceMonsters" :data="data" :number-multiplier="numberMultiplier" />
+                  <TableContent
+                    :monsters="dungeonChoiceMonsters"
+                    :data="data"
+                    :number-multiplier="numberMultiplier"
+                  />
                 </tbody>
               </table>
             </div>
           </div>
 
           <div v-if="data.activeTab === 'slayer'" class="space-y-4">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div
+              class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+            >
               <h2 class="flex items-center gap-2 text-lg font-semibold">
                 Slayer
                 <IdleStatusIcon :idleable="canIdleSlayerTier" />
@@ -219,51 +405,105 @@
                 class="px-4 py-2.5 text-white rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:outline-none cursor-pointer max-w-xs"
                 v-model="data.slayerTier"
               >
-                <option v-for="tier of slayerTiers" :value="tier.name">{{ tier.name }}</option>
+                <option v-for="tier of slayerTiers" :value="tier.name">
+                  {{ tier.name }}
+                </option>
               </select>
             </div>
             <div class="overflow-x-auto rounded-xl border border-border/50">
               <table class="w-full">
                 <thead>
                   <tr class="border-b border-border/50 bg-dark-lighter/30">
-                    <th class="px-4 py-3 text-left text-sm font-medium text-muted">Name</th>
-                    <th class="hidden px-4 py-3 text-left text-sm font-medium text-muted md:table-cell">Attack style</th>
-                    <th class="hidden px-4 py-3 text-right text-sm font-medium text-muted tabular-nums md:table-cell">Max hit</th>
-                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">Reduced Max hit</th>
-                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">DR needed (%)</th>
+                    <th
+                      class="px-4 py-3 text-left text-sm font-medium text-muted"
+                    >
+                      Name
+                    </th>
+                    <th
+                      class="hidden px-4 py-3 text-left text-sm font-medium text-muted md:table-cell"
+                    >
+                      Attack style
+                    </th>
+                    <th
+                      class="hidden px-4 py-3 text-right text-sm font-medium text-muted tabular-nums md:table-cell"
+                    >
+                      Max hit
+                    </th>
+                    <th
+                      class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums"
+                    >
+                      Reduced Max hit
+                    </th>
+                    <th
+                      class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums"
+                    >
+                      DR needed (%)
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <TableContent :monsters="slayerTierMonsters" :data="data" :number-multiplier="numberMultiplier" />
+                  <TableContent
+                    :monsters="slayerTierMonsters"
+                    :data="data"
+                    :number-multiplier="numberMultiplier"
+                  />
                 </tbody>
               </table>
             </div>
           </div>
 
           <div v-if="data.activeTab === 'slayerAreas'" class="space-y-4">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div
+              class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+            >
               <h2 class="text-lg font-semibold">Slayer Areas</h2>
               <select
                 id="slayerAreas"
                 class="px-4 py-2.5 text-white rounded-lg bg-dark-lighter border border-border hover:border-border-hover focus:border-accent focus:outline-none cursor-pointer max-w-xs"
                 v-model="data.slayerArea"
               >
-                <option v-for="area of slayerAreas" :value="area.name">{{ area.name }}</option>
+                <option v-for="area of filteredSlayerAreas" :value="area.name">
+                  {{ area.name }}
+                </option>
               </select>
             </div>
             <div class="overflow-x-auto rounded-xl border border-border/50">
               <table class="w-full">
                 <thead>
                   <tr class="border-b border-border/50 bg-dark-lighter/30">
-                    <th class="px-4 py-3 text-left text-sm font-medium text-muted">Name</th>
-                    <th class="hidden px-4 py-3 text-left text-sm font-medium text-muted md:table-cell">Attack style</th>
-                    <th class="hidden px-4 py-3 text-right text-sm font-medium text-muted tabular-nums md:table-cell">Max hit</th>
-                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">Reduced Max hit</th>
-                    <th class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums">DR needed (%)</th>
+                    <th
+                      class="px-4 py-3 text-left text-sm font-medium text-muted"
+                    >
+                      Name
+                    </th>
+                    <th
+                      class="hidden px-4 py-3 text-left text-sm font-medium text-muted md:table-cell"
+                    >
+                      Attack style
+                    </th>
+                    <th
+                      class="hidden px-4 py-3 text-right text-sm font-medium text-muted tabular-nums md:table-cell"
+                    >
+                      Max hit
+                    </th>
+                    <th
+                      class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums"
+                    >
+                      Reduced Max hit
+                    </th>
+                    <th
+                      class="px-4 py-3 text-right text-sm font-medium text-muted tabular-nums"
+                    >
+                      DR needed (%)
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <TableContent :monsters="slayerAreaMonsters" :data="data" :number-multiplier="numberMultiplier" />
+                  <TableContent
+                    :monsters="slayerAreaMonsters"
+                    :data="data"
+                    :number-multiplier="numberMultiplier"
+                  />
                 </tbody>
               </table>
             </div>
@@ -276,7 +516,13 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, reactive, watch } from "vue";
-import { dungeons, monsters, slayerTiers, slayerAreas } from "./data";
+import {
+  dungeons,
+  monsters,
+  slayerTiers,
+  slayerAreas,
+  type Monster,
+} from "./data";
 import {
   getAttacks,
   getIsIdleable,
@@ -284,6 +530,7 @@ import {
   getMinimumDR,
   getReducedMaxHit,
   getAutoEatThreshold,
+  monsterMatchesOwnedExpansions,
 } from "./utils";
 import { Data } from "./types";
 import TableContent from "./components/TableContent.vue";
@@ -298,7 +545,11 @@ const tabs = [
 
 onMounted(() => {
   if (localStorage["data"]) {
-    Object.assign(data, JSON.parse(localStorage["data"]));
+    const stored = JSON.parse(localStorage["data"]);
+    Object.assign(data, stored);
+    if (!stored.ownedExpansions) {
+      data.ownedExpansions = { totH: true, aoD: true };
+    }
   }
 });
 
@@ -318,28 +569,54 @@ const data = reactive<Data>({
   dungeonChoice: "Chicken Coop",
   activeTab: "monsters",
   inputsVisible: true,
+  ownedExpansions: { totH: true, aoD: true },
 });
 
-const dungeonChoiceMonsters = computed(
-  () =>
-    dungeons
-      .find((dungeon) => dungeon.name === data.dungeonChoice)
-      ?.monsters.map(getMonster) ?? [],
+function filterMonstersByExpansion(monsterNames: readonly string[]): Monster[] {
+  return monsterNames
+    .map(getMonster)
+    .filter((m) => monsterMatchesOwnedExpansions(m, data.ownedExpansions));
+}
+
+const filteredMonsters = computed(() =>
+  monsters.filter((m) =>
+    monsterMatchesOwnedExpansions(m, data.ownedExpansions),
+  ),
 );
 
-const slayerTierMonsters = computed(
-  () =>
-    slayerTiers
-      .find((dungeon) => dungeon.name === data.slayerTier)
-      ?.monsters.map(getMonster) ?? [],
+const filteredDungeons = computed(() =>
+  dungeons.filter((dungeon) =>
+    dungeon.monsters.some((name) =>
+      monsterMatchesOwnedExpansions(getMonster(name), data.ownedExpansions),
+    ),
+  ),
 );
 
-const slayerAreaMonsters = computed(
-  () =>
-    slayerAreas
-      .find((dungeon) => dungeon.name === data.slayerArea)
-      ?.monsters.map(getMonster) ?? [],
+const filteredSlayerAreas = computed(() =>
+  slayerAreas.filter((area) =>
+    area.monsters.some((name) =>
+      monsterMatchesOwnedExpansions(getMonster(name), data.ownedExpansions),
+    ),
+  ),
 );
+
+const dungeonChoiceMonsters = computed(() => {
+  const dungeon = dungeons.find((d) => d.name === data.dungeonChoice);
+  if (!dungeon) return [];
+  return filterMonstersByExpansion(dungeon.monsters);
+});
+
+const slayerTierMonsters = computed(() => {
+  const tier = slayerTiers.find((t) => t.name === data.slayerTier);
+  if (!tier) return [];
+  return filterMonstersByExpansion(tier.monsters);
+});
+
+const slayerAreaMonsters = computed(() => {
+  const area = slayerAreas.find((a) => a.name === data.slayerArea);
+  if (!area) return [];
+  return filterMonstersByExpansion(area.monsters);
+});
 
 function getMonster(monsterString: string) {
   return (
@@ -351,7 +628,9 @@ const canIdleDungeon = computed(() => {
   if (!dungeonChoiceMonsters.value) return false;
   return dungeonChoiceMonsters.value.every((monster) =>
     getIsIdleable(
-      getReducedMaxHit(getAttacks(monster, false, numberMultiplier.value, data)),
+      getReducedMaxHit(
+        getAttacks(monster, false, numberMultiplier.value, data),
+      ),
       data,
     ),
   );
@@ -361,17 +640,40 @@ const canIdleSlayerTier = computed(() => {
   if (!slayerTierMonsters.value) return false;
   return slayerTierMonsters.value.every((monster) =>
     getIsIdleable(
-      getReducedMaxHit(getAttacks(monster, false, numberMultiplier.value, data)),
+      getReducedMaxHit(
+        getAttacks(monster, false, numberMultiplier.value, data),
+      ),
       data,
     ),
   );
 });
 
-const numberMultiplier = computed(() =>
-  data.mode === "Adventure" ? 100 : 10,
-);
+const numberMultiplier = computed(() => (data.mode === "Adventure" ? 100 : 10));
 
 watch(data, (data) => {
   localStorage["data"] = JSON.stringify(data);
 });
+
+watch(
+  () => [data.ownedExpansions.totH, data.ownedExpansions.aoD] as const,
+  () => {
+    const validDungeons = dungeons.filter((d) =>
+      d.monsters.some((name) =>
+        monsterMatchesOwnedExpansions(getMonster(name), data.ownedExpansions),
+      ),
+    );
+    if (!validDungeons.some((d) => d.name === data.dungeonChoice)) {
+      data.dungeonChoice = validDungeons[0]?.name ?? data.dungeonChoice;
+    }
+    const validAreas = slayerAreas.filter((a) =>
+      a.monsters.some((name) =>
+        monsterMatchesOwnedExpansions(getMonster(name), data.ownedExpansions),
+      ),
+    );
+    if (!validAreas.some((a) => a.name === data.slayerArea)) {
+      data.slayerArea = validAreas[0]?.name ?? data.slayerArea;
+    }
+  },
+  { immediate: true },
+);
 </script>

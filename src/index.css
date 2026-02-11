@@ -18,6 +18,12 @@
   --color-danger-dim: rgba(220, 71, 83, 0.12);
   --color-muted: #8c8d92;
   --color-muted-light: #a4a5aa;
+
+  /* Expansion accents */
+  --color-expansion-toth: #c9a227;
+  --color-expansion-toth-dim: rgba(201, 162, 39, 0.15);
+  --color-expansion-aod: #2d9daa;
+  --color-expansion-aod-dim: rgba(45, 157, 170, 0.15);
   
   /* Typography */
   --font-sans: "DM Sans", system-ui, sans-serif;
