@@ -6,9 +6,9 @@
       <div class="sticky top-0 mb-1 bg-dark">
         <div v-if="data.inputsVisible">
           <div
-            class="flex flex-col justify-center py-4 mt-4 space-y-4 md:flex-row md:space-x-4 md:space-y-0"
+            class="flex flex-col justify-center py-4 mt-4 gap-4 md:flex-row md:gap-4"
           >
-            <div class="flex space-x-4 md:w-1/2">
+            <div class="flex gap-4 md:w-1/2">
               <label for="totalHealth" class="w-1/2">
                 <div class="mb-1 font-semibold">Total health</div>
                 <input
@@ -33,7 +33,7 @@
                 />
               </label>
             </div>
-            <div class="flex space-x-4 md:w-1/2">
+            <div class="flex gap-4 md:w-1/2">
               <label for="autoEatLevel" class="w-1/2">
                 <div class="mb-1 font-semibold">Auto Eat</div>
                 <select
@@ -62,7 +62,7 @@
                 </select>
               </label>
             </div>
-            <div class="flex space-x-4 md:w-1/2">
+            <div class="flex gap-4 md:w-1/2">
               <label for="wastefulRing" class="w-1/2">
                 <div class="mb-1 font-semibold">Wasteful ring</div>
                 <select
@@ -90,9 +90,9 @@
             </div>
           </div>
           <div
-            class="flex flex-col py-4 pt-0 space-y-4 md:flex-row md:space-x-4 md:space-y-0"
+            class="flex flex-col py-4 pt-0 gap-4 md:flex-row md:gap-4"
           >
-            <div class="flex space-x-4 md:w-1/2">
+            <div class="flex gap-4 md:w-1/2">
               <label for="mode" class="w-1/2">
                 <div class="mb-1 font-semibold">Mode</div>
                 <select
@@ -124,7 +124,7 @@
                 </select>
               </label>
             </div>
-            <div class="flex space-x-4 md:w-1/2">
+            <div class="flex gap-4 md:w-1/2">
               <label for="stunDamage" class="w-1/2">
                 <div class="mb-1 font-semibold">Stun damage</div>
                 <select
